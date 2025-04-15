@@ -2,6 +2,7 @@
 {
     public class Usuario
     {
+        // Comentario para probar el control de versiones
         public int IdUsuario { get; set; }
         public string UserName { get; set; }
         public byte[] PasswordHash { get; set; }
