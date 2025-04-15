@@ -2,7 +2,7 @@
 
 namespace Films.DAL
 {
-    public class DBConnection
+    public class DBConnection //hay que ponerlo como DbConnection
     {
         private SqlConnection connection;
         public SqlConnection Connection { get { return connection; } }
