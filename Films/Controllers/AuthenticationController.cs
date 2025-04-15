@@ -45,9 +45,9 @@ namespace Films.Controllers
             {
                 UserDAL dal = new UserDAL();
                 User usuario = new User();
-                usuario.UserName = model.UserName;
+                usuario.Username = model.UserName;
                 
-                User usuarioExistente = dal.GetUsuarioLogin(usuario.UserName, model.Password);
+                User usuarioExistente = dal.GetUsuarioLogin(usuario.Username, model.Password);
 
                 if (usuarioExistente != null)
                 {
@@ -61,7 +61,7 @@ namespace Films.Controllers
 
                 if (validarCreacion != null) 
                 {
-                    HttpContext.Session.SetString("Username", usuario.UserName);
+                    HttpContext.Session.SetString("Username", usuario.Username);
                     return RedirectToAction("Index", "Home");
                 }
 

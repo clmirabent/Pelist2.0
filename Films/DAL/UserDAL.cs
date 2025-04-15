@@ -10,7 +10,7 @@ namespace Films.DAL
             dbConn = new DBConnection();
         }
 
-        public User GetUsuarioLogin(string userName, string pwd)
+        public User GetUsuarioLogin(string username, string pwd)
         {
             try
             {
@@ -18,7 +18,7 @@ namespace Films.DAL
                 string sql = $"SELECT * FROM User WHERE Username = @Username";
 
                 SqlCommand cmd = new SqlCommand(sql, dbConn.Connection);
-                cmd.Parameters.AddWithValue("@Username", userName);
+                cmd.Parameters.AddWithValue("@Username", username);
 
                 SqlDataReader reader = cmd.ExecuteReader();
 
