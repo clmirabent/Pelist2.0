@@ -1,36 +1,30 @@
 using System.Diagnostics;
 using Films.Models;
 using Microsoft.AspNetCore.Mvc;
+using static Films.Services.TmbdService;
 
 namespace Films.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly TmdbService _tmdbService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, TmdbService tmdbService)
         {
             _logger = logger;
+            _tmdbService = tmdbService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            //return View();
-            string username = HttpContext.Session.GetString("Username");
-
-            if (string.IsNullOrEmpty(username))
-                return RedirectToAction("Login", "Authentication");
-
-            ViewBag.Username = username;
-
-            return View();
+            var movies = await _tmdbService.GetPopularMovieTitlesAsync();
+            return View(movies);
         }
 
         public IActionResult Privacy()
         {
             return View();
         }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     }
 }
