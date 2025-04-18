@@ -23,8 +23,8 @@ namespace Films.Controllers
         {
             if (ModelState.IsValid)
             {
-                UsuarioDAL dal = new UsuarioDAL();
-                Usuario usuario = dal.GetUsuarioLogin(model.Username, model.Password);
+                UserDAL dal = new UserDAL();
+                User usuario = dal.GetUsuarioLogin(model.Username, model.Password);
 
                 if (usuario != null)
                 {
@@ -43,11 +43,11 @@ namespace Films.Controllers
         {
             if (ModelState.IsValid)
             {
-                UsuarioDAL dal = new UsuarioDAL();
-                Usuario usuario = new Usuario();
-                usuario.UserName = model.UserName;
+                UserDAL dal = new UserDAL();
+                User usuario = new User();
+                usuario.Username = model.UserName;
                 
-                Usuario usuarioExistente = dal.GetUsuarioLogin(usuario.UserName, model.Password);
+                User usuarioExistente = dal.GetUsuarioLogin(usuario.Username, model.Password);
 
                 if (usuarioExistente != null)
                 {
@@ -57,11 +57,11 @@ namespace Films.Controllers
 
                 dal.CreateUsuario(usuario, model.Password);
 
-                Usuario validarCreacion = dal.GetUsuarioLogin(model.UserName, model.Password);
+                User validarCreacion = dal.GetUsuarioLogin(model.UserName, model.Password);
 
                 if (validarCreacion != null) 
                 {
-                    HttpContext.Session.SetString("Username", usuario.UserName);
+                    HttpContext.Session.SetString("Username", usuario.Username);
                     return RedirectToAction("Index", "Home");
                 }
 

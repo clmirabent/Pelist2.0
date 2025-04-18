@@ -1,4 +1,6 @@
-﻿@{
+﻿@using Films.Models.APIModels
+@model List<Movie>
+@{
     ViewData["Title"] = "Home Page";
 
     string mensaje = "Welcome";
@@ -12,4 +14,25 @@
 <div class="text-center">
     <h1 class="display-4">@mensaje</h1>
     <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h2>Películas Populares</h2>
+
+    @if (Model == null || !Model.Any()) // Verificamos si la lista está vacía o es null
+    {
+        <p>No hay películas disponibles.</p>
+    }
+    else
+    {
+        <ul>
+            @foreach (var movie in Model)
+            {
+                <li>@movie.Title</li>
+            }
+        </ul>
+    }
 </div>
+
+
+
+
+
+

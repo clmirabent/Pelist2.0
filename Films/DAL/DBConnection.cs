@@ -17,7 +17,7 @@ namespace Films.DAL
             try
             {
                 string connectionString = "Data Source=46.183.117.154,54321;" +
-                    "Initial Catalog=AlexUsuario;" +
+                    "Initial Catalog=0Films;" +
                     "User ID=sa;" +
                     "Password=Sql#123456789;" +
                     "TrustServerCertificate=True;";
