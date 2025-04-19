@@ -1,9 +1,13 @@
-﻿namespace Films.Models
+﻿using System;
+using System.Collections.Generic;
+
+namespace Films.Models;
+
+public partial class MovieReview
 {
-    public class MovieReview
-    {
-        public int IdMoviewReview { get; set; }
-        public int FkIdMovie { get; set; }
-        public float AverageRating { get; set; }
-    }
+    public int IdMovieReview { get; set; }
+
+    public int FkIdMovie { get; set; }
+
+    public decimal AverageRating { get; set; }
 }

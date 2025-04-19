@@ -1,4 +1,10 @@
+using Films.Context;
 using static Films.Services.TmbdService;
+using Microsoft.EntityFrameworkCore;
+using Films.Models;
+using Films.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using DbContext = Films.Context.FilmsDbContext;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,33 +20,35 @@ builder.Services.AddScoped<TmdbService>();
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddSession(options =>
-{
-    options.IdleTimeout = TimeSpan.FromDays(30);
-    options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
-});
+// DbContext settings
+
+builder.Services.AddDbContext<FilmsDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+
+
+builder.Services.AddAuthentication()
+    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+    {
+        options.LoginPath = "/Autentication/Login";
+    });
+
+// Cloudinary Settings
+builder.Services.Configure<CloudinarySettings>(
+    builder.Configuration.GetSection("CloudinarySettings")
+);
+builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
-}
-
-app.UseSession();
-
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-
-app.UseRouting();
-
+app.UseStaticFiles();      
+app.UseRouting();          
+app.UseAuthentication();   
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
 
 app.Run();

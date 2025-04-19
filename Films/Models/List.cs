@@ -1,13 +1,19 @@
-﻿namespace Films.Models
-{
-    public class List
-    {
-        public int IdList { get; set; }
-        public int FkIdUser { get; set; }
-        public int FkIdMovie { get; set; }
-        public int FkIdTypeList { get; set; }
+﻿using System;
+using System.Collections.Generic;
 
-        public User User { get; set; }
-        public TypeList TypeList { get; set; }
-    }
+namespace Films.Models;
+
+public partial class List
+{
+    public int IdList { get; set; }
+
+    public int FkIdUser { get; set; }
+
+    public int FkIdMovie { get; set; }
+
+    public int FkIdTypeList { get; set; }
+
+    public virtual TypeList FkIdTypeListNavigation { get; set; } = null!;
+
+    public virtual User FkIdUserNavigation { get; set; } = null!;
 }

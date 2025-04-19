@@ -1,11 +1,15 @@
-﻿namespace Films.Models
-{
-    public class Preference
-    {
-        public int IdPreference { get; set; }
-        public int FkIdUser { get; set; }
-        public int FkIdCategory { get; set; }
+﻿using System;
+using System.Collections.Generic;
 
-        public User User { get; set; }
-    }
+namespace Films.Models;
+
+public partial class Preference
+{
+    public int IdPreference { get; set; }
+
+    public int FkIdUser { get; set; }
+
+    public int FkIdCategory { get; set; }
+
+    public virtual User FkIdUserNavigation { get; set; } = null!;
 }
