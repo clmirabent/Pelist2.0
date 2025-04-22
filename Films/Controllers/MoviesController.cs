@@ -16,11 +16,5 @@ namespace Films.Controllers
             _tmdbService = tmdbService;
             _context = context;
         }
-
-        public async Task<IActionResult> Index()
-        {
-            var movies = await _tmdbService.GetPopularMovieTitlesAsync();
-            return View("~/Views/Home/Index.cshtml", movies);
-        }
     }
 }

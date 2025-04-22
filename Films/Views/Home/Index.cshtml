@@ -1,5 +1,5 @@
 ﻿@using Films.Models.APIModels
-@model List<Movie>
+@model Films.Models.ViewModels.HomeViewModel
 @{
     ViewData["Title"] = "Home Page";
 
@@ -10,26 +10,92 @@
         mensaje = "Welcome, " + ViewBag.Username + "!";
     }
 }
+@section Styles {
+    <link rel="stylesheet" href="~/css/HomeIndex.css?v=@DateTime.Now.Ticks" />
+}
 
-<div class="text-center">
-    <h1 class="display-4">@mensaje</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-    <h2>Películas Populares</h2>
-
-    @if (Model == null || !Model.Any()) // Verificamos si la lista está vacía o es null
+<div class="home-container">
+    <!--Buscador y filtros-->
+    <div id="buscador-container" class="d-flex">
+        <button class="" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
+        <input id="buscador" type="text" />
+        <button class="">Buscar</button>
+    </div>
+    @if (Model == null)
     {
         <p>No hay películas disponibles.</p>
     }
     else
     {
-        <ul>
-            @foreach (var movie in Model)
-            {
-                <li>@movie.Title</li>
-            }
-        </ul>
+        <!--Listas de películas separadas por categorias-->
+        @foreach (var category in Model.CategorizedMovies)
+        {
+            var movies = category.Value;
+            var categoryName = category.Key;
+            @await Html.PartialAsync("_MovieCategoryPartial", Tuple.Create(categoryName, movies, Model.UserMovieLists))
+        }
+
+        <!--Modal de listas-->
+        <div class="modal fade" id="movieModal" tabindex="-1" aria-labelledby="movieModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content bg-dark text-white">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="movieModalLabel">Mover a una lista</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="post" action="/Home/AddToList">
+                            <button type="submit" class="btn bg-custom-button w-100 mb-3" name="listType" value="Pendiente">
+                                <i class="fa-regular fa-hourglass-half"></i> Pendiente
+                            </button>
+                            <input type="hidden" name="idFilm" class="idFilm"/>
+                        </form>
+
+                        <form method="post" action="/Home/AddToList">
+                            <button type="submit" class="btn bg-custom-button w-100 mb-3" name="listType" value="Completada">
+                                <i class="fa-solid fa-check"></i> Completada
+                            </button>
+                            <input type="hidden" name="idFilm" class="idFilm" />
+                        </form>
+
+                        <form method="post" action="/Home/AddToList">
+                            <button type="submit" class="btn bg-custom-button w-100 mb-3" name="listType" value="Favorita">
+                                <i class="fa-solid fa-heart"></i> Favorita
+                            </button>
+                            <input type="hidden" name="idFilm" class="idFilm" />
+                        </form>
+
+                        <form method="post" action="/Home/AddToList">
+                            <button type="submit" class="btn bg-custom-button w-100 mb-3" name="listType" value="Abandonada">
+                                <i class="fa-regular fa-trash-can"></i> Abandonada
+                            </button>
+                            <input type="hidden" name="idFilm" class="idFilm" />
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--Modal de filtros-->
+        <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content bg-dark text-white">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="filterModalLabel">Añade filtros</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        Aqui iran los filtros
+                    </div>
+                </div>
+            </div>
+        </div>
+
     }
 </div>
+@section Scripts {
+    <script src="~/js/home.js"></script>
+}
 
 
 

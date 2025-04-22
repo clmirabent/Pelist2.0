@@ -1,0 +1,45 @@
+﻿@model Tuple<string, List<Films.Models.APIModels.Movie>, List<Films.Models.List>>
+
+<h3 class="text-white mt-4">@Model.Item1</h3>
+
+<div class="movie-scroll-container">
+    @foreach (var movie in Model.Item2)
+    {
+        var movieList = Model.Item3.FirstOrDefault(l => l.FkIdMovie == movie.Id);
+        string listSymbol = "";
+        if (movieList != null)
+        {
+            switch (movieList.FkIdTypeList)
+            {
+                case 1: listSymbol = "fa-hourglass-half"; break;
+                case 2: listSymbol = "fa-check"; break;
+                case 3: listSymbol = "fa-heart"; break;
+                case 4: listSymbol = "fa-trash-can"; break;
+            }
+        }
+
+        <div class="movie-card">
+            <div class="movieImg" style="background-image: url('https://image.tmdb.org/t/p/w500/@movie.PosterPath');">
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <button id="@movie.Id" class="movieBtn" data-bs-toggle="modal" data-bs-target="#movieModal" data-id="@movie.Id">
+                        @if (string.IsNullOrEmpty(listSymbol))
+                        {
+                            <i class="fa-solid fa-plus fa-sm"></i>
+                        } else {
+                            <i class="fa-solid @listSymbol fa-sm"></i>
+                        }
+                    </button>
+                }
+            </div>
+            <p class="text-white">
+                @(
+                    movie.Title.Length > 30
+                    ? movie.Title.Substring(0, 30) + "..."
+                    : movie.Title
+                    )
+            </p>
+            <p class="text-white">★ @movie.Review.ToString("0.0") | @(DateTime.Parse(movie.ReleaseDate).Year)</p>
+        </div>
+    }
+</div>
