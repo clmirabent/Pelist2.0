@@ -14,16 +14,28 @@ namespace Films.Services
                 _httpClient = httpClientFactory.CreateClient("TMDb");
             }
 
-            public async Task<List<Movie>> GetPopularMovieTitlesAsync()
+            public async Task<List<Movie>> GetPopularMovieAsync()
             {
                 var response = await _httpClient.GetAsync($"movie/popular?api_key={_apiKey}&language=es-ES&page=1");
                 response.EnsureSuccessStatusCode();
 
                 var json = await response.Content.ReadAsStringAsync();
-                var data = JsonConvert.DeserializeObject<PopularMoviesResponse>(json);
+                var data = JsonConvert.DeserializeObject<MoviesResponse>(json);
 
-                return data?.Results?.Take(10).ToList() ?? new List<Movie>();
+                return data?.Results?.Take(30).ToList() ?? new List<Movie>();
             }
+
+            public async Task<List<Movie>> GetMoviesByGenreAsync(int genreId)
+            {
+                var response = await _httpClient.GetAsync($"discover/movie?api_key={_apiKey}&language=es-ES&with_genres={genreId}");
+                response.EnsureSuccessStatusCode();
+
+                var json = await response.Content.ReadAsStringAsync();
+                var data = JsonConvert.DeserializeObject<MoviesResponse>(json);
+
+                return data?.Results?.Take(30).ToList() ?? new List<Movie>();
+            }
+
         }
 
     }
