@@ -22,7 +22,7 @@
             <div class="movieImg" style="background-image: url('https://image.tmdb.org/t/p/w500/@movie.PosterPath');">
                 @if (User.Identity.IsAuthenticated)
                 {
-                    <button id="@movie.Id" class="movieBtn" data-bs-toggle="modal" data-bs-target="#movieModal" data-id="@movie.Id">
+                    <button id="@movie.Id" class="movieBtn" data-bs-toggle="modal" data-bs-target="#movieModal" data-id="@movie.Id" data-listtype="@movieList?.FkIdTypeList">
                         @if (string.IsNullOrEmpty(listSymbol))
                         {
                             <i class="fa-solid fa-plus fa-sm"></i>

@@ -1,4 +1,6 @@
-﻿using Films.Models.APIModels;
+﻿using System;
+using System.IO;
+using Films.Models.APIModels;
 using Newtonsoft.Json;
 namespace Films.Services
 {
@@ -36,7 +38,28 @@ namespace Films.Services
                 return data?.Results?.Take(30).ToList() ?? new List<Movie>();
             }
 
-        }
+            public async Task<List<Genre>> GetGenresAsync()
+            {
+                var response = await _httpClient.GetAsync($"genre/movie/list?api_key={_apiKey}&language=es-ES");
+                response.EnsureSuccessStatusCode();
 
+                var json = await response.Content.ReadAsStringAsync();
+                var data = JsonConvert.DeserializeObject<GenresResponse>(json);
+
+                return data?.Genres ?? new List<Genre>();
+            }
+
+            public async Task<List<People>> GetPopularActorsAsync()
+            {
+                var response = await _httpClient.GetAsync($"person/popular?api_key={_apiKey}&language=es-ES&page=1");
+                response.EnsureSuccessStatusCode();
+
+                var json = await response.Content.ReadAsStringAsync();
+                var data = JsonConvert.DeserializeObject<PeopleResponse>(json);
+
+                return data?.Results ?? new List<People>();
+            }
+
+        }
     }
 }

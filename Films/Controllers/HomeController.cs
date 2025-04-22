@@ -57,10 +57,18 @@ namespace Films.Controllers
                 .Where(l => l.FkIdUser == idUser)
                 .ToListAsync();
 
+            var allGenres = await _tmdbService.GetGenresAsync();
+            List<Genre> genres = allGenres;
+
+            var allPopularActors = await _tmdbService.GetPopularActorsAsync();
+            List<People> popularActors = allPopularActors;
+
             var viewModel = new HomeViewModel
             {
                 CategorizedMovies = categorizedMovies,
-                UserMovieLists = userLists
+                UserMovieLists = userLists,
+                Genres = genres,
+                Actors = popularActors,
             };
 
             return View(viewModel);
