@@ -101,3 +101,9 @@ body {
 .bg-custom-button:hover {
     background-color: #e0b423;
 }
+
+/*Modal de filtros*/
+
+.border-radius {
+    border-radius: 20px;
+}
