@@ -1,0 +1,201 @@
+﻿
+p{
+    margin: 0;
+    padding: 0;
+}
+
+.movie-detail-container {
+    height: 100vh;
+}
+
+.movie-detail-banner {
+    position: relative;
+    height: 450px;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+    padding-bottom: 10px;
+}
+
+.banner-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+}
+
+.banner-overlay {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.5), transparent 100%);
+    display: flex;
+    align-items: flex-end;
+    padding-bottom: 2rem;
+}
+
+.banner-content {
+    display: flex;
+    align-items: flex-end;
+    gap: 2rem;
+    color: white;
+}
+
+.poster {
+    height: 300px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
+    border-radius: 10px;
+}
+
+.info h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.info .genres {
+    font-style: italic;
+    color: #ccc;
+}
+
+.movie-detail-body {
+    margin-top: 2rem;
+    font-size: 1.1rem;
+}
+
+.genres {
+    margin-top: 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.genre-badge {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    padding: 0.3rem 0.7rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.3s;
+}
+
+.genre-badge:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.score {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    width: fit-content;
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    background-color: rgba(0, 0, 0, 0.3); /* más transparente */
+    color: #fff;
+    box-shadow: 0 0 4px rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(6px); /* menos difuminado */
+    z-index: 2;
+}
+
+
+.score-value {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #F4C430; /* puedes ajustar esto según el diseño */
+}
+
+.score-label {
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.score-value {
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+.score.excellent .score-value {
+    color: #00ff88;
+}
+
+.score.good .score-value {
+    color: #f9c74f;
+}
+
+.score.average .score-value {
+    color: #f9844a;
+}
+
+.score.low .score-value {
+    color: #f94144;
+}
+
+.movie-actions {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.action-btn {
+    padding: 0.4rem 0.9rem;
+    border: none;
+    border-radius: 6px;
+    background-color: #1f1f1f;
+    color: #ffffff;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.15s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+    .action-btn:hover {
+        background-color: #333333;
+        transform: scale(1.03);
+    }
+
+    .action-btn:active {
+        transform: scale(0.98);
+    }
+.movie-actions {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.action-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.tooltip {
+    position: absolute;
+    top: 110%;
+    white-space: nowrap;
+    background-color: rgba(0, 0, 0, 0.75);
+    color: #fff;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+    border-radius: 6px;
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.action-wrapper:hover .tooltip {
+    opacity: 1;
+    transform: translateY(0);
+}

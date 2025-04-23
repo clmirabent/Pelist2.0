@@ -1,0 +1,76 @@
+﻿@using Films.Models.ViewModels
+@model Films.Models.ViewModels.MovieDetailsViewModel
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/MovieDetail.css?v=@DateTime.Now.Ticks" />
+}
+
+@{
+    string scoreClass = "low";
+    if (Model.Review >= 9)
+    {
+        scoreClass = "excellent";
+    }
+    else if (Model.Review >= 7)
+    {
+        scoreClass = "good";
+    }
+    else if (Model.Review >= 5)
+    {
+        scoreClass = "average";
+    }
+}
+
+
+<div class="movie-detail-container">
+    <div class="movie-detail-banner" style="background-image: url('https://image.tmdb.org/t/p/original/@Model.BackdropPath');">
+        <div class="banner-overlay">
+            <div class="banner-content container">
+                <img class="poster" src="https://image.tmdb.org/t/p/w500/@Model.PosterPath" alt="@Model.Title" />
+                <div class="info">
+                    <h1>@Model.Title</h1>
+                    <div class="score @scoreClass">
+                        <span class="score-value">@Model.Review</span>
+                        <span class="score-label">Nota de los usuarios</span>
+                    </div>
+                    <div class="genres">
+                        @foreach (var genre in Model.Genres)
+                        {
+                            <span class="genre-badge">@genre.Name</span>
+                        }
+                    </div>
+                    <div class="movie-actions">
+                        <div class="action-wrapper">
+                            <button class="action-btn"><i class="fa-regular fa-hourglass-half"></i></button>
+                            <span class="tooltip">Pendiente</span>
+                        </div>
+                        <div class="action-wrapper">
+                            <button class="action-btn"><i class="fa-solid fa-check"></i></button>
+                            <span class="tooltip">Completada</span>
+                        </div>
+                        <div class="action-wrapper">
+                            <button class="action-btn"><i class="fa-solid fa-heart"></i></button>
+                            <span class="tooltip">Favorita</span>
+                        </div>
+                        <div class="action-wrapper">
+                            <button class="action-btn"><i class="fa-regular fa-trash-can"></i></button>
+                            <span class="tooltip">Abandonada</span>
+                        </div>
+                    </div>
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container movie-detail-body">
+        <p class="sinopsis"><strong>Sinopsis</strong></p>
+        <p>@Model.Overview</p>
+        <p><strong>Review:</strong> @Model.Review</p>
+    </div>
+</div>
+
+
+

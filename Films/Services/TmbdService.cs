@@ -60,6 +60,21 @@ namespace Films.Services
                 return data?.Results ?? new List<People>();
             }
 
+            public async Task<Movie> GetMovieById(int movieId)
+            {
+                var response = await _httpClient.GetAsync($"movie/{movieId}?api_key={_apiKey}&language=es-ES");
+                response.EnsureSuccessStatusCode();
+
+                var json = await response.Content.ReadAsStringAsync();
+                var data = JsonConvert.DeserializeObject<Movie>(json);
+
+                // Asegurar que data no sea null 
+                if (data == null)
+                    throw new Exception("Error al obtener la película");
+
+                return data;
+            }
+
         }
     }
 }

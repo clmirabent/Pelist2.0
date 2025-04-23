@@ -18,28 +18,37 @@
             }
         }
 
-        <div class="movie-card">
-            <div class="movieImg" style="background-image: url('https://image.tmdb.org/t/p/w500/@movie.PosterPath');">
-                @if (User.Identity.IsAuthenticated)
-                {
-                    <button id="@movie.Id" class="movieBtn" data-bs-toggle="modal" data-bs-target="#movieModal" data-id="@movie.Id" data-list-type="@movieList?.FkIdTypeList">
-                        @if (string.IsNullOrEmpty(listSymbol))
-                        {
-                            <i class="fa-solid fa-plus fa-sm"></i>
-                        } else {
-                            <i class="fa-solid @listSymbol fa-sm"></i>
-                        }
-                    </button>
-                }
-            </div>
-            <p class="text-white">
-                @(
-                    movie.Title.Length > 30
-                    ? movie.Title.Substring(0, 30) + "..."
-                    : movie.Title
-                    )
-            </p>
-            <p class="text-white">★ @movie.Review.ToString("0.0") | @(DateTime.Parse(movie.ReleaseDate).Year)</p>
+        <div class="movie-container" style="position: relative;">
+            @if (User.Identity.IsAuthenticated)
+            {
+                <button id="@movie.Id"
+                        class="movieBtn"
+                        data-bs-toggle="modal"
+                        data-bs-target="#movieModal"
+                        data-id="@movie.Id"
+                        data-list-type="@movieList?.FkIdTypeList">
+                    @if (string.IsNullOrEmpty(listSymbol))
+                    {
+                        <i class="fa-solid fa-plus fa-sm"></i>
+                    }
+                    else
+                    {
+                        <i class="fa-solid @listSymbol fa-sm"></i>
+                    }
+                </button>
+            }
+
+            <a href="/movie/@movie.Id/detail" class="text-decoration-none">
+                <div class="movie-card">
+                    <div class="movieImg" style="background-image: url('https://image.tmdb.org/t/p/w500/@movie.PosterPath');">
+                    </div>
+                    <p class="text-white">
+                        @(movie.Title.Length > 30 ? movie.Title.Substring(0, 30) + "..." : movie.Title)
+                    </p>
+                    <p class="text-white">★ @movie.Review.ToString("0.0") | @(DateTime.Parse(movie.ReleaseDate).Year)</p>
+                </div>
+            </a>
         </div>
+
     }
 </div>
