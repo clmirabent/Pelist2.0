@@ -6,6 +6,9 @@
 }
 
 @{
+    var currentList = Model.UserMovieLists
+        .FirstOrDefault(l => l.FkIdMovie == Model.Id);
+
     string scoreClass = "low";
     if (Model.Review >= 9)
     {
@@ -19,6 +22,7 @@
     {
         scoreClass = "average";
     }
+
 }
 
 
@@ -41,20 +45,45 @@
                     </div>
                     <div class="movie-actions">
                         <div class="action-wrapper">
-                            <button class="action-btn"><i class="fa-regular fa-hourglass-half"></i></button>
-                            <span class="tooltip">Pendiente</span>
+                            <form method="post" action="/Home/AddToList">
+                                <button type="submit" class="action-btn" name="listType" value="Pendiente">
+                                    <i class="fa-regular fa-hourglass-half"></i>
+                                </button>
+                                <input type="hidden" name="idFilm" class="idFilm" value="@Model.Id" />
+                                <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                                <span class="tooltip">Pendiente</span>
+                            </form>
                         </div>
                         <div class="action-wrapper">
-                            <button class="action-btn"><i class="fa-solid fa-check"></i></button>
-                            <span class="tooltip">Completada</span>
+                            <form method="post" action="/Home/AddToList">
+                                <button type="submit" class="action-btn" name="listType" value="Completada">
+                                    <i class="fa-solid fa-check"></i>
+                                </button>
+                                <input type="hidden" name="idFilm" class="idFilm" value="@Model.Id" />
+                                <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                                <span class="tooltip">Completada</span>
+
+                            </form>
                         </div>
                         <div class="action-wrapper">
-                            <button class="action-btn"><i class="fa-solid fa-heart"></i></button>
-                            <span class="tooltip">Favorita</span>
+                            <form method="post" action="/Home/AddToList">
+                                <button class="action-btn" type="submit" name="listType" value="Favorita">
+                                    <i class="fa-solid fa-heart"></i>
+                                </button>
+                                <input type="hidden" name="idFilm" class="idFilm" value="@Model.Id" />
+                                <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                                <span class="tooltip">Favorita</span>
+                            </form>
                         </div>
                         <div class="action-wrapper">
-                            <button class="action-btn"><i class="fa-regular fa-trash-can"></i></button>
-                            <span class="tooltip">Abandonada</span>
+                            <form method="post" action="/Home/AddToList">
+                                <button class="action-btn" type="submit" name="listType" value="Abandonada">
+                                    <i class="fa-regular fa-trash-can"></i>
+                                </button>
+                                <span class="tooltip">Abandonada</span>
+                                <input type="hidden" name="idFilm" class="idFilm" value="@Model.Id" />
+                                <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                            </form>
                         </div>
                     </div>
 
@@ -68,7 +97,6 @@
     <div class="container movie-detail-body">
         <p class="sinopsis"><strong>Sinopsis</strong></p>
         <p>@Model.Overview</p>
-        <p><strong>Review:</strong> @Model.Review</p>
     </div>
 </div>
 

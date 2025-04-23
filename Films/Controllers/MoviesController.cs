@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using static Films.Services.TmbdService;
 using Films.Models.ViewModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace Films.Controllers
 {
@@ -26,6 +27,13 @@ namespace Films.Controllers
             if (movie == null)
                 return NotFound();
 
+            var userIdClaim = User.FindFirst("UserId");
+            int idUser = userIdClaim != null ? int.Parse(userIdClaim.Value) : 0;
+
+            var userLists = await _context.Lists
+                .Where(l => l.FkIdUser == idUser)
+                .ToListAsync();
+
             var vm = new MovieDetailsViewModel
             {
                 Id = movie.Id,
@@ -33,6 +41,7 @@ namespace Films.Controllers
                 Genres = movie.Genres,
                 Review = movie.Review,
                 Overview = movie.Overview,
+                UserMovieLists = userLists,
                 PosterPath = movie.PosterPath,
                 BackdropPath = movie.BackdropPath,
                 ReleaseDate = DateTime.Parse(movie.ReleaseDate),

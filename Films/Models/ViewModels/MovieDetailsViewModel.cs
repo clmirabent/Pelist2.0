@@ -22,7 +22,6 @@ namespace Films.Models.ViewModels
         public bool? IsWatched { get; set; }
         public bool? IsPending { get; set; }
         public bool? IsAbandoned { get; set; }
-
         public bool MostrarEstadoUsuario => IsFavorite != null; // True si hay sesión y datos
     }
 }
