@@ -45,28 +45,28 @@
                     </div>
                     <div class="modal-body">
                         <form method="post" action="/Home/AddToList">
-                            <button type="submit" class="btn bg-custom-button w-100 mb-3" name="listType" value="Pendiente">
+                            <button type="submit" class="listButton btn bg-custom-button w-100 mb-3" name="listType" value="Pendiente">
                                 <i class="fa-regular fa-hourglass-half"></i> Pendiente
                             </button>
                             <input type="hidden" name="idFilm" class="idFilm"/>
                         </form>
 
                         <form method="post" action="/Home/AddToList">
-                            <button type="submit" class="btn bg-custom-button w-100 mb-3" name="listType" value="Completada">
+                            <button type="submit" class="listButton btn bg-custom-button w-100 mb-3" name="listType" value="Completada">
                                 <i class="fa-solid fa-check"></i> Completada
                             </button>
                             <input type="hidden" name="idFilm" class="idFilm" />
                         </form>
 
                         <form method="post" action="/Home/AddToList">
-                            <button type="submit" class="btn bg-custom-button w-100 mb-3" name="listType" value="Favorita">
+                            <button type="submit" class="listButton btn bg-custom-button w-100 mb-3" name="listType" value="Favorita">
                                 <i class="fa-solid fa-heart"></i> Favorita
                             </button>
                             <input type="hidden" name="idFilm" class="idFilm" />
                         </form>
 
                         <form method="post" action="/Home/AddToList">
-                            <button type="submit" class="btn bg-custom-button w-100 mb-3" name="listType" value="Abandonada">
+                            <button type="submit" class="listButton btn bg-custom-button w-100 mb-3" name="listType" value="Abandonada">
                                 <i class="fa-regular fa-trash-can"></i> Abandonada
                             </button>
                             <input type="hidden" name="idFilm" class="idFilm" />
@@ -125,7 +125,7 @@
     }
 </div>
 @section Scripts {
-    <script src="~/js/home.js"></script>
+    <script src="~/js/home.js?v=@DateTime.Now.Ticks"></script>
 }
 
 
