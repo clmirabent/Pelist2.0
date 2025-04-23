@@ -88,3 +88,35 @@ body {
 a {
     color: #F4C430;
 }
+
+.btn-logout {
+    background-color: #F4C430;
+    color: #1e1e2f;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.btn-logout:hover {
+    background-color: #e0b423;
+    transform: translateY(-2px);
+}
+
+.btn-login {
+    background-color: transparent;
+    color: #F4C430;
+    border: 2px solid #F4C430;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.btn-login:hover {
+    background-color: #F4C430;
+    color: #1e1e2f;
+}

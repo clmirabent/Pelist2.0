@@ -49,6 +49,19 @@
                             </li>
                         </ul>
                     }
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-logout">Cerrar sesión</button>
+                            @Html.AntiForgeryToken()
+                        </form>
+                    }
+                    else
+                    {
+                        <a asp-controller="Authentication" asp-action="Login" class="btn btn-login">Iniciar sesión</a>
+                    }
+
+                    
                 </div>
             </div>
         </nav>

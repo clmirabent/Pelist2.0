@@ -11,3 +11,5 @@ public partial class TypeList
 
     public virtual ICollection<List> Lists { get; set; } = new List<List>();
 }
+
+
