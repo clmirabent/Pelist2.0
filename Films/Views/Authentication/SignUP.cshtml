@@ -1,5 +1,4 @@
-﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
-@model Films.Models.ViewModels.SignUpViewModel
+﻿@model Films.Models.ViewModels.SignUpViewModel
 @{
     Layout = null;
     <link rel="stylesheet" href="~/css/login.css" />
@@ -17,12 +16,12 @@
             <div class="form-group">
                 <label>Nombre de Usuario</label>
                 <input asp-for="UserName" class="form-control" />
-                <span asp-validation-for="UserName" class="text-danger"></span>
+                <span asp-validation-for="UserName" style="color: #F4C430" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label>Email</label>
                 <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
+                <span asp-validation-for="Email" style="color: #F4C430" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label>Contraseña</label>
@@ -41,39 +40,28 @@
 
             <button type="submit" class="btn-submit">Registrarse</button>
         </form>
-        <p>Ya tienes una cuenta? <a asp-action="Login">Log in</a></p>
+        <p>¿Ya tienes una cuenta? <a asp-action="Login">Log in</a></p>
     </div>
 </div>
 
-<!-- library SweetAlert2 -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- Scripts para la validación remota -->
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 
-<!-- Success Popup  (when a user create an account) -->
+<!-- Popup de éxito al registrarse (opcional) -->
 @if (TempData["SignUpSuccess"] != null)
 {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         Swal.fire({
             icon: 'success',
             title: '¡Cuenta creada!',
-            text: '@Html.Raw(TempData["SignUpSuccess"])',
+            text: '@TempData["SignUpSuccess"]',
             showConfirmButton: false,
             timer: 2000
         });
     </script>
 }
 
-<!-- Error popup when a user try to create an account with an email thar already exists -->
-@if (ViewBag.SignUpError != null)
-{
-    <script>
-        console.log("SignUpError: " + '@ViewBag.SignUpError');
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: '@Html.Raw(ViewBag.SignUpError)',
-            showConfirmButton: false,
-            timer: 2000
-        });
-    </script>
-}
 
