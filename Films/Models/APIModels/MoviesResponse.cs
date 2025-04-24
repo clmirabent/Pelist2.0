@@ -25,8 +25,10 @@ namespace Films.Models.APIModels
         [JsonProperty("genres")]
         public List<Genre> Genres { get; set; } = new List<Genre>();
 
-        //NUESTROS DATOS
+        // Actores
+        public List<People> Persons { get; set; } = new List<People>();
 
+        //NUESTROS DATOS
         public decimal Review { get; set; } = 0;
     }
 }

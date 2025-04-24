@@ -17,6 +17,8 @@ namespace Films.Models.ViewModels
         public double Rating { get; set; }
         public decimal Review { get; set; }
         public List<Genre> Genres { get; set; } = new List<Genre>();
+        public List<People> Persons { get; set; } = new List<People>();
+
 
         // Estado del usuario (opcional)
         public bool? IsFavorite { get; set; }

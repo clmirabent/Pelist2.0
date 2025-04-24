@@ -6,6 +6,18 @@
 }
 
 @{
+    // Lista de personas que viene de ViewModel
+    var persons = Model.Persons;
+    // Filtrar por los actores
+    var actors = persons
+        .Where(p => p.Department == "Acting")
+        .ToList();
+
+    // Filtrar por los directores
+    var directors = persons
+    .Where(p => p.Department == "Director")
+    .ToList();
+
     var currentList = Model.UserMovieLists
         .FirstOrDefault(l => l.FkIdMovie == Model.Id);
     int type = 0;
@@ -98,11 +110,73 @@
     <div class="container movie-detail-body">
         <p class="sinopsis"><strong>Sinopsis</strong></p>
         <p>@Model.Overview</p>
+        <p>Actores destacados</p>
+        @{
+            foreach(var actor in actors)
+            {
+                <p>@(actor.Name)</p>
+            }
+        }
     </div>
 
     @if (Model.RelatedMovies?.Any() == true)
     {
-    
+        <div class="container related-movies">
+            <h4>Películas relacionadas</h4>
+            <div class="movie-scroll-container">
+                @foreach (var movie in Model.RelatedMovies)
+                {
+					var movieList = Model.UserMovieLists
+					.FirstOrDefault(l => l.FkIdMovie == movie.Id);
+                    string listSymbol = "";
+                    if (movieList != null)
+                    {
+                        switch (movieList.FkIdTypeList)
+                        {
+                            case 1: listSymbol = "fa-hourglass-half"; break;
+                            case 2: listSymbol = "fa-check"; break;
+                            case 3: listSymbol = "fa-heart"; break;
+                            case 4: listSymbol = "fa-trash-can"; break;
+                        }
+                    }
+
+                    <div class="movie-container" style="position: relative;">
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <button id="@movie.Id"
+                                    class="movieBtn"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#movieModal"
+                                    data-id="@movie.Id"
+                                    data-list-type="@movieList?.FkIdTypeList">
+                                @if (string.IsNullOrEmpty(listSymbol))
+                                {
+                                    <i class="fa-solid fa-plus fa-sm"></i>
+                                }
+                                else
+                                {
+                                    <i class="fa-solid @listSymbol fa-sm"></i>
+                                }
+                            </button>
+                        }
+
+                        <a href="/movie/@movie.Id/detail" class="text-decoration-none">
+                            <div class="movie-card">
+                                <div class="movieImg" style="background-image: url('https://image.tmdb.org/t/p/w500/@movie.PosterPath');">
+                                </div>
+                                <p class="text-white">
+                                    @(movie.Title.Length > 30 ? movie.Title.Substring(0, 30) + "..." : movie.Title)
+                                </p>
+                                <p class="text-white">★ @movie.Review.ToString("0.0") | @(DateTime.Parse(movie.ReleaseDate).Year)</p>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+            
+
+
+        </div>
     }
 </div>
 

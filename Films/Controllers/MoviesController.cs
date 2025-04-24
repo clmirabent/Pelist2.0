@@ -47,9 +47,9 @@ namespace Films.Controllers
                 .Take(30) // limitar la cantidad
                 .ToList();
 
-
-
-
+            // Obtener la lista de actores
+            var actors = await _tmdbService.GetPopularActorsByMovieId(movie.Id);
+            movie.Persons = actors;
 
             var vm = new MovieDetailsViewModel
             {
@@ -62,7 +62,8 @@ namespace Films.Controllers
                 PosterPath = movie.PosterPath,
                 BackdropPath = movie.BackdropPath,
                 ReleaseDate = DateTime.Parse(movie.ReleaseDate),
-                RelatedMovies = relatedMovies
+                RelatedMovies = relatedMovies,
+                Persons = movie.Persons
             };
 
             return View(vm);
