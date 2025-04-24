@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using static Films.Services.TmbdService;
 using Films.Models.ViewModels;
 using Microsoft.EntityFrameworkCore;
+using Films.Models;
 
 namespace Films.Controllers
 {
@@ -34,6 +35,22 @@ namespace Films.Controllers
                 .Where(l => l.FkIdUser == idUser)
                 .ToListAsync();
 
+            // Recuperar la nota de review promedio de esta peli
+            var review = _context.MovieReviews.FirstOrDefault(r => r.FkIdMovie == movie.Id);
+            movie.Review = review?.AverageRating ?? 0;
+
+            var genreIds = movie.Genres.Select(g => g.Id).ToList();
+            int genreIdToUse = genreIds.FirstOrDefault();
+
+            var relatedMovies = (await _tmdbService.GetMoviesByGenreAsync(genreIdToUse))
+                .Where(m => m.Id != movie.Id)
+                .Take(30) // limitar la cantidad
+                .ToList();
+
+
+
+
+
             var vm = new MovieDetailsViewModel
             {
                 Id = movie.Id,
@@ -45,6 +62,7 @@ namespace Films.Controllers
                 PosterPath = movie.PosterPath,
                 BackdropPath = movie.BackdropPath,
                 ReleaseDate = DateTime.Parse(movie.ReleaseDate),
+                RelatedMovies = relatedMovies
             };
 
             return View(vm);

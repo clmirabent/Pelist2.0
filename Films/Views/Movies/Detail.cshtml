@@ -25,9 +25,7 @@
     {
         scoreClass = "average";
     }
-
 }
-
 
 <div class="movie-detail-container">
     <div class="movie-detail-banner" style="background-image: url('https://image.tmdb.org/t/p/original/@Model.BackdropPath');">
@@ -101,7 +99,10 @@
         <p class="sinopsis"><strong>Sinopsis</strong></p>
         <p>@Model.Overview</p>
     </div>
+
+    @if (Model.RelatedMovies?.Any() == true)
+    {
+    
+    }
 </div>
-
-
 

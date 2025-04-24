@@ -12,9 +12,10 @@ namespace Films.Models.ViewModels
         public string Overview { get; set; }
         public string PosterPath { get; set; }
         public string BackdropPath { get; set; } // Agregado para la vista de detalle
+        public List<Movie> RelatedMovies { get; set; } = new();
         public DateTime? ReleaseDate { get; set; }
         public double Rating { get; set; }
-        public decimal Review { get; set; } = 0;
+        public decimal Review { get; set; }
         public List<Genre> Genres { get; set; } = new List<Genre>();
 
         // Estado del usuario (opcional)
