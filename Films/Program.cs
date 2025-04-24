@@ -20,6 +20,15 @@ builder.Services.AddScoped<TmdbService>();
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+// Sesions
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
+
 // DbContext settings
 
 builder.Services.AddDbContext<FilmsDbContext>(options =>
@@ -41,7 +50,8 @@ builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 
 var app = builder.Build();
 
-app.UseStaticFiles();      
+app.UseStaticFiles();
+app.UseSession();
 app.UseRouting();          
 app.UseAuthentication();   
 app.UseAuthorization();

@@ -18,8 +18,10 @@
     <!--Buscador y filtros-->
     <div id="buscador-container" class="d-flex">
         <button class="" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
-        <input id="buscador" type="text" />
-        <button class="">Buscar</button>
+        <form method="post" asp-action="SetSearchMovies">
+            <input id="search" name="txtSearch" type="text" placeholder="Busqueda..." value="@(ViewBag.Search != null ? ViewBag.Search : "")"/>
+            <button type="submit">Buscar</button>
+        </form>
     </div>
     @if (Model == null)
     {
@@ -27,102 +29,120 @@
     }
     else
     {
-        <!--Listas de películas separadas por categorias-->
-        @foreach (var category in Model.CategorizedMovies)
+        @if (ViewBag.FilterGenre == null && ViewBag.FilterActor == null && ViewBag.FilterYear == null && ViewBag.FilterDuration == null && ViewBag.Search == null) 
         {
-            var movies = category.Value;
-            var categoryName = category.Key;
-            @await Html.PartialAsync("_MovieCategoryPartial", Tuple.Create(categoryName, movies, Model.UserMovieLists))
-        }
+            <!--Listas de películas separadas por categorias-->
+            @foreach (var category in Model.CategorizedMovies)
+            {
+                var movies = category.Value;
+                var categoryName = category.Key;
+                @await Html.PartialAsync("_MovieCategoryPartial", Tuple.Create(categoryName, movies, Model.UserMovieLists))
+            }
 
-        <!--Modal de listas-->
-        <div class="modal fade" id="movieModal" tabindex="-1" aria-labelledby="movieModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content bg-dark text-white">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="movieModalLabel">Mover a una lista</h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form method="post" action="/Home/AddToList">
-                            <button type="submit" class="listButton btn bg-custom-button w-100 mb-3" name="listType" value="Pendiente">
-                                <i class="fa-regular fa-hourglass-half"></i> Pendiente
-                            </button>
-                            <input type="hidden" name="idFilm" class="idFilm"/>
-                        </form>
+            <!--Modal de listas-->
+            <div class="modal fade" id="movieModal" tabindex="-1" aria-labelledby="movieModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content bg-dark text-white">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="movieModalLabel">Mover a una lista</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form method="post" asp-action="AddToList">
+                                <button type="submit" class="listButton btn bg-custom-button w-100 mb-3" name="listType" value="Pendiente">
+                                    <i class="fa-regular fa-hourglass-half"></i> Pendiente
+                                </button>
+                                <input type="hidden" name="idFilm" class="idFilm"/>
+                            </form>
 
-                        <form method="post" action="/Home/AddToList">
-                            <button type="submit" class="listButton btn bg-custom-button w-100 mb-3" name="listType" value="Completada">
-                                <i class="fa-solid fa-check"></i> Completada
-                            </button>
-                            <input type="hidden" name="idFilm" class="idFilm" />
-                        </form>
+                            <form method="post" asp-action="AddToList">
+                                <button type="submit" class="listButton btn bg-custom-button w-100 mb-3" name="listType" value="Completada">
+                                    <i class="fa-solid fa-check"></i> Completada
+                                </button>
+                                <input type="hidden" name="idFilm" class="idFilm" />
+                            </form>
 
-                        <form method="post" action="/Home/AddToList">
-                            <button type="submit" class="listButton btn bg-custom-button w-100 mb-3" name="listType" value="Favorita">
-                                <i class="fa-solid fa-heart"></i> Favorita
-                            </button>
-                            <input type="hidden" name="idFilm" class="idFilm" />
-                        </form>
+                            <form method="post" asp-action="AddToList">
+                                <button type="submit" class="listButton btn bg-custom-button w-100 mb-3" name="listType" value="Favorita">
+                                    <i class="fa-solid fa-heart"></i> Favorita
+                                </button>
+                                <input type="hidden" name="idFilm" class="idFilm" />
+                            </form>
 
-                        <form method="post" action="/Home/AddToList">
-                            <button type="submit" class="listButton btn bg-custom-button w-100 mb-3" name="listType" value="Abandonada">
-                                <i class="fa-regular fa-trash-can"></i> Abandonada
-                            </button>
-                            <input type="hidden" name="idFilm" class="idFilm" />
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!--Modal de filtros-->
-        <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content bg-dark text-white">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="filterModalLabel">Añade filtros</h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="gap-2 mt-3">
-                            <form method="post" class="d-flex flex-column" asp-action="AddFilters">
-
-                                <label for="genres" class="mt-2">Género:</label>
-                                <select class="form-select-sm border-radius" name="genres">
-                                    <option value="0">--Elige un filtro--</option>
-                                    @foreach(var genre in Model.Genres) 
-                                    {
-                                        <option value="@genre.Id">@genre.Name</option>
-                                    }
-                                </select>
-
-                                <label for="actors" class="mt-2">Actores:</label>
-                                <select class="form-select-sm border-radius" name="actors">
-                                    <option value="0">--Elige un actor--</option>
-                                    @foreach (var actor in Model.Actors)
-                                    {
-                                        <option value="@actor.Id">@actor.Name</option>
-                                    }
-                                </select>
-
-                                <label for="year" class="mt-2">Año:</label>
-                                <input type="number" class="form-control-sm border-radius" id="year" name="year" min="1900" max="@DateTime.Now.Year" />
-
-                                <label for="duration" class="mt-2">Duración máxima (<output id="durationOutput">120</output> min):</label>
-                                <input type="range" id="duration" name="duration" min="60" max="500" step="10" value="120" class="form-range" oninput="durationOutput.value = duration.value" />
-                                <div class="d-flex justify-content-center gap-2 mt-3">
-                                    <button type="submit" class="btn btn-submit">Aplicar</button>
-                                    <a asp-action="ResetFilters" class="btn btn-submit">Reiniciar</a>
-                                </div>
+                            <form method="post" asp-action="AddToList">
+                                <button type="submit" class="listButton btn bg-custom-button w-100 mb-3" name="listType" value="Abandonada">
+                                    <i class="fa-regular fa-trash-can"></i> Abandonada
+                                </button>
+                                <input type="hidden" name="idFilm" class="idFilm" />
                             </form>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-
+        } 
+        else 
+        {
+            <h3 class="text-white mt-4">Películas encontradas</h3>
+        }
     }
+    <!--Modal de filtros-->
+    <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark text-white">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="filterModalLabel">Añade filtros</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="gap-2 mt-3">
+                        <form method="post" class="d-flex flex-column" asp-action="AddFilters">
+                            <label for="genres" class="mt-2">Género:</label>
+                            <select class="form-select-sm border-radius" name="genre">
+                                <option value="0">--Elige un filtro--</option>
+                                @foreach(var genre in Model.Genres) 
+                                {
+                                    if (ViewBag.FilterGenre != null && (int)ViewBag.FilterGenre == genre.Id)
+                                    {
+                                        <option value="@genre.Id" selected>@genre.Name</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@genre.Id">@genre.Name</option>
+                                    }
+                                }
+                            </select>
+
+                            <label for="actors" class="mt-2">Actores:</label>
+                            <select class="form-select-sm border-radius" name="actor">
+                                <option value="0">--Elige un actor--</option>
+                                @foreach (var actor in Model.Actors)
+                                {
+                                    if (ViewBag.FilterActor != null && (int)ViewBag.FilterActor == actor.Id) 
+                                    {
+                                        <option value="@actor.Id" selected>@actor.Name</option>
+                                    }
+                                    else 
+                                    {
+                                        <option value="@actor.Id">@actor.Name</option>
+                                    }
+                                }
+                            </select>
+
+                            <label for="year" class="mt-2">Año:</label>
+                            <input type="number" class="form-control-sm border-radius" id="year" name="year" min="1900" max="@DateTime.Now.Year" value="@(ViewBag.FilterYear != 0 ? ViewBag.FilterYear : "")" />
+
+                            <label for="duration" class="mt-2">Duración máxima (<output id="durationOutput">@(ViewBag.FilterDuration ?? 120)</output> min):</label>
+                            <input type="range" id="duration" name="duration" min="60" max="500" step="10" value="@(ViewBag.FilterDuration ?? 120)" class="form-range" oninput="durationOutput.value = duration.value" />
+                            <div class="d-flex justify-content-center gap-2 mt-3">
+                                <button type="submit" class="btn btn-submit">Aplicar</button>
+                                <a asp-action="ResetFilters" class="btn btn-submit">Reiniciar</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 @section Scripts {
     <script src="~/js/home.js?v=@DateTime.Now.Ticks"></script>

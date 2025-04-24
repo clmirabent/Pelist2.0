@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using static Films.Services.TmbdService;
+using System.Reflection.Metadata.Ecma335;
 
 namespace Films.Controllers
 {
@@ -26,36 +27,21 @@ namespace Films.Controllers
 
         public async Task<IActionResult> Index()
         {
+            int? genre = HttpContext.Session.GetInt32("FilterGenre");
+            int? actor = HttpContext.Session.GetInt32("FilterActor");
+            int? year = HttpContext.Session.GetInt32("FilterYear");
+            int? duration = HttpContext.Session.GetInt32("FilterDuration");
+            string? search = HttpContext.Session.GetString("Search");
+
+            ViewBag.FilterGenre = genre;
+            ViewBag.FilterActor = actor;
+            ViewBag.FilterYear = year;
+            ViewBag.FilterDuration = duration;
+            ViewBag.Search = search;
 
             var allReviews = await _context.MovieReviews.ToListAsync();
 
             List<MovieReview> moviesReviews = allReviews;
-
-            var categorizedMovies = new Dictionary<string, List<Movie>>
-            {
-                { "En tendencia", await _tmdbService.GetPopularMovieAsync() },
-                { "De terror", await _tmdbService.GetMoviesByGenreAsync(27) },
-                { "De Acción", await _tmdbService.GetMoviesByGenreAsync(28) },
-                { "De Animación", await _tmdbService.GetMoviesByGenreAsync(16) },
-                { "Para partirse de risa", await _tmdbService.GetMoviesByGenreAsync(35) },
-                { "Documentales", await _tmdbService.GetMoviesByGenreAsync(99) },
-                { "De romance", await _tmdbService.GetMoviesByGenreAsync(10749) },
-                { "De ciencia ficción", await _tmdbService.GetMoviesByGenreAsync(878) },
-                { "Para ver en família", await _tmdbService.GetMoviesByGenreAsync(10751) },
-                { "De crimenes", await _tmdbService.GetMoviesByGenreAsync(80) },
-            };
-
-            foreach (var movieList in categorizedMovies.Values)
-            {
-                AddReviewsToMovies(movieList, moviesReviews);
-            }
-
-            var userIdClaim = User.FindFirst("UserId");
-            int idUser = userIdClaim != null ? int.Parse(userIdClaim.Value) : 0;
-
-            var userLists = await _context.Lists
-                .Where(l => l.FkIdUser == idUser)
-                .ToListAsync();
 
             var allGenres = await _tmdbService.GetGenresAsync();
             List<Genre> genres = allGenres;
@@ -63,15 +49,51 @@ namespace Films.Controllers
             var allPopularActors = await _tmdbService.GetPopularActorsAsync();
             List<People> popularActors = allPopularActors;
 
-            var viewModel = new HomeViewModel
-            {
-                CategorizedMovies = categorizedMovies,
-                UserMovieLists = userLists,
-                Genres = genres,
-                Actors = popularActors,
-            };
+            if (genre == null && actor == null && year == null && duration == null && search == null) { 
+                var categorizedMovies = new Dictionary<string, List<Movie>>
+                {
+                    { "En tendencia", await _tmdbService.GetPopularMovieAsync() },
+                    { "De terror", await _tmdbService.GetMoviesByGenreAsync(27) },
+                    { "De Acción", await _tmdbService.GetMoviesByGenreAsync(28) },
+                    { "De Animación", await _tmdbService.GetMoviesByGenreAsync(16) },
+                    { "Para partirse de risa", await _tmdbService.GetMoviesByGenreAsync(35) },
+                    { "Documentales", await _tmdbService.GetMoviesByGenreAsync(99) },
+                    { "De romance", await _tmdbService.GetMoviesByGenreAsync(10749) },
+                    { "De ciencia ficción", await _tmdbService.GetMoviesByGenreAsync(878) },
+                    { "Para ver en família", await _tmdbService.GetMoviesByGenreAsync(10751) },
+                    { "De crimenes", await _tmdbService.GetMoviesByGenreAsync(80) },
+                };
 
-            return View(viewModel);
+                foreach (var movieList in categorizedMovies.Values)
+                {
+                    AddReviewsToMovies(movieList, moviesReviews);
+                }
+
+                var userIdClaim = User.FindFirst("UserId");
+                int idUser = userIdClaim != null ? int.Parse(userIdClaim.Value) : 0;
+
+                var userLists = await _context.Lists
+                    .Where(l => l.FkIdUser == idUser)
+                    .ToListAsync();
+
+                var viewModel = new HomeViewModel
+                {
+                    CategorizedMovies = categorizedMovies,
+                    UserMovieLists = userLists,
+                    Genres = genres,
+                    Actors = popularActors,
+                };
+                return View(viewModel);
+            } 
+            else
+            {
+                var viewModel = new HomeViewModel
+                {
+                    Genres = genres,
+                    Actors = popularActors,
+                };
+                return View(viewModel);
+            }
         }
 
         public IActionResult Privacy()
@@ -120,6 +142,43 @@ namespace Films.Controllers
             });
 
             await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddFilters(int genre, int actor, int year, int duration)
+        {
+            HttpContext.Session.SetInt32("FilterGenre", genre);
+            HttpContext.Session.SetInt32("FilterActor", actor);
+            HttpContext.Session.SetInt32("FilterYear", year);
+            HttpContext.Session.SetInt32("FilterDuration", duration);
+            return RedirectToAction("Index", "Home");
+        }
+
+        public IActionResult ResetFilters()
+        {
+            HttpContext.Session.Remove("FilterGenre");
+            HttpContext.Session.Remove("FilterActor");
+            HttpContext.Session.Remove("FilterYear");
+            HttpContext.Session.Remove("FilterDuration");
+            return RedirectToAction("Index", "Home");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult SetSearchMovies(string txtSearch)
+        {
+            if (txtSearch != null)
+            {
+                if (!txtSearch.Equals(""))
+                    HttpContext.Session.SetString("Search", txtSearch);
+                else
+                    HttpContext.Session.Remove("Search");
+            }
+            else
+                HttpContext.Session.Remove("Search");
 
             return RedirectToAction("Index", "Home");
         }
