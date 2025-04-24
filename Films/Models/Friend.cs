@@ -13,7 +13,7 @@ public partial class Friend
 
     public bool PendingFriend { get; set; }
 
-    public virtual User FkIdFriendNavigation { get; set; } = null!;
+    public virtual User FkIdFriendNavigation { get; set; } = null!; //El amigo agregado.
 
-    public virtual User FkIdUserNavigation { get; set; } = null!;
+    public virtual User FkIdUserNavigation { get; set; } = null!; //Quien envía la solicitud.
 }

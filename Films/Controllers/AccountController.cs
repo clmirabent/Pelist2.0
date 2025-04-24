@@ -44,13 +44,12 @@ public class AccountController : Controller
             TempData["SweetAlertMessage"] = "Por favor, inicia sesión.";
             return RedirectToAction("Login");
         }
-
-        //var friends = await GetFriendsAsync(userId);
+        
         var viewModel = new UserProfileViewModel
         {
             User = user,
             TypeLists = typeLists,
-            //Friends = friends,
+           
         };
 
         return View(viewModel);
@@ -66,26 +65,9 @@ public class AccountController : Controller
         return RedirectToAction("Index", "Home");
     }
 
-   
-    public async Task<IActionResult> Friends()
-    {
-        var id = GetUserIdFromClaims();
-        if (id == null)
-        {
-            TempData["SweetAlertMessage"] = "Por favor, inicia sesión para ver a tus amigos.";
-            return RedirectToAction("Login", "Authentication");
-        }
+    
 
-        var user = await _context.Users
-            .Include(n => n.FriendFkIdUserNavigations).Include(user => user.FriendFkIdFriendNavigations)
-            .Where(n => n.IdUser == id).SingleOrDefaultAsync();
-       
-        var realFriends = user.FriendFkIdFriendNavigations.ToList();
-
-        return View(realFriends);
-        
-    }
-   private int? GetUserIdFromClaims()
+    public int? GetUserIdFromClaims()
     {
         if (int.TryParse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value, out var userId))
         {

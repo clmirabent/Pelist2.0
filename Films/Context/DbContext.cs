@@ -37,7 +37,7 @@ public partial class FilmsDbContext : DbContext
         {
             entity.HasKey(e => e.IdFriend).HasName("PK__Friend__30F0D95255E854BC");
 
-            entity.ToTable("Friend");
+           entity.ToTable("Friend");
 
             entity.HasOne(d => d.FkIdFriendNavigation).WithMany(p => p.FriendFkIdFriendNavigations)
                 .HasForeignKey(d => d.FkIdFriend)
