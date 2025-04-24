@@ -199,3 +199,12 @@ p{
     opacity: 1;
     transform: translateY(0);
 }
+
+.action-btn.active {
+    background-color: #ffffff;
+    color: #000000;
+    border: 2px solid #ffffff;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+    transform: scale(1.05);
+    transition: all 0.2s ease;
+}
