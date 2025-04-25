@@ -11,6 +11,7 @@
     // Filtrar por los actores
     var actors = persons
         .Where(p => p.Department == "Acting")
+        .Take(4)
         .ToList();
 
     // Filtrar por los directores
@@ -116,11 +117,12 @@
         <div class="movie-detail-actors">
             <p> <strong>Actores destacados</strong> </p>
             <div class="actor-pics">
-                @{
-                    foreach (var actor in actors)
-                    {
-                        <p>@(actor.Name)</p>
-                    }
+                @foreach (var actor in actors)
+                {
+                    <div class="actor-item">
+                        <img src="https://image.tmdb.org/t/p/w185/@actor.ProfilePath" alt="@actor.Name" />
+                        <span>@actor.Name</span>
+                    </div>
                 }
             </div>
             
