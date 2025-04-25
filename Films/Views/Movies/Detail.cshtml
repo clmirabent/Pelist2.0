@@ -108,15 +108,23 @@
     </div>
 
     <div class="container movie-detail-body">
-        <p class="sinopsis"><strong>Sinopsis</strong></p>
-        <p>@Model.Overview</p>
-        <p>Actores destacados</p>
-        @{
-            foreach(var actor in actors)
-            {
-                <p>@(actor.Name)</p>
-            }
-        }
+        <div class="movie-detail-sinopsis">
+            <p class="sinopsis"><strong>Sinopsis</strong></p>
+            <p>@Model.Overview</p>
+        </div>
+
+        <div class="movie-detail-actors">
+            <p> <strong>Actores destacados</strong> </p>
+            <div class="actor-pics">
+                @{
+                    foreach (var actor in actors)
+                    {
+                        <p>@(actor.Name)</p>
+                    }
+                }
+            </div>
+            
+        </div>
     </div>
 
     @if (Model.RelatedMovies?.Any() == true)
