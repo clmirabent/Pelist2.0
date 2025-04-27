@@ -16,11 +16,11 @@
 
 <div class="home-container">
     <!--Buscador y filtros-->
-    <div id="buscador-container" class="d-flex">
-        <button class="" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
-        <form method="post" asp-action="SetSearchMovies">
-            <input id="search" name="txtSearch" type="text" placeholder="Busqueda..." value="@(ViewBag.Search != null ? ViewBag.Search : "")"/>
-            <button type="submit">Buscar</button>
+    <div id="buscador-container" class="d-flex align-items-stretch gap-2">
+        <button class="btn bg-custom-button" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
+        <form method="post" asp-action="SetSearchMovies" class="d-flex flex-grow-1">
+            <input id="search" class="form-control me-2 bg-dark text-white border-custom" name="txtSearch" type="text" placeholder="Busqueda..." value="@(ViewBag.Search != null ? ViewBag.Search : "")" />
+            <button type="submit" class="btn bg-custom-button d-flex align-items-center gap-2">Buscar <i class="fa-solid fa-search"></i></button>
         </form>
     </div>
     @if (Model == null)
@@ -29,61 +29,60 @@
     }
     else
     {
-        @if (ViewBag.FilterGenre == null && ViewBag.FilterActor == null && ViewBag.FilterYear == null && ViewBag.FilterDuration == null && ViewBag.Search == null) 
+        //@if (ViewBag.FilterGenre == null && ViewBag.FilterActor == null && ViewBag.FilterYear == null && ViewBag.FilterDuration == null && ViewBag.Search == null) 
+
+        <!--Listas de películas separadas por categorias-->
+        @foreach (var category in Model.CategorizedMovies)
         {
-            <!--Listas de películas separadas por categorias-->
-            @foreach (var category in Model.CategorizedMovies)
-            {
-                var movies = category.Value;
-                var categoryName = category.Key;
-                @await Html.PartialAsync("_MovieCategoryPartial", Tuple.Create(categoryName, movies, Model.UserMovieLists))
-            }
+            var movies = category.Value;
+            var categoryName = category.Key;
+            @await Html.PartialAsync("_MovieCategoryPartial", Tuple.Create(categoryName, movies, Model.UserMovieLists))
+        }
 
-            <!--Modal de listas-->
-            <div class="modal fade" id="movieModal" tabindex="-1" aria-labelledby="movieModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content bg-dark text-white">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="movieModalLabel">Mover a una lista</h5>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form method="post" asp-action="AddToList">
-                                <button type="submit" class="listButton btn bg-custom-button w-100 mb-3" name="listType" value="Pendiente">
-                                    <i class="fa-regular fa-hourglass-half"></i> Pendiente
-                                </button>
-                                <input type="hidden" name="idFilm" class="idFilm"/>
-                            </form>
+        <!--Modal de listas-->
+        <div class="modal fade" id="movieModal" tabindex="-1" aria-labelledby="movieModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content bg-dark text-white">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="movieModalLabel">Mover a una lista</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="post" asp-action="AddToList">
+                            <button type="submit" class="listButton btn bg-custom-button w-100 mb-3" name="listType" value="Pendiente">
+                                <i class="fa-regular fa-hourglass-half"></i> Pendiente
+                            </button>
+                            <input type="hidden" name="idFilm" class="idFilm"/>
+                        </form>
 
-                            <form method="post" asp-action="AddToList">
-                                <button type="submit" class="listButton btn bg-custom-button w-100 mb-3" name="listType" value="Completada">
-                                    <i class="fa-solid fa-check"></i> Completada
-                                </button>
-                                <input type="hidden" name="idFilm" class="idFilm" />
-                            </form>
+                        <form method="post" asp-action="AddToList">
+                            <button type="submit" class="listButton btn bg-custom-button w-100 mb-3" name="listType" value="Completada">
+                                <i class="fa-solid fa-check"></i> Completada
+                            </button>
+                            <input type="hidden" name="idFilm" class="idFilm" />
+                        </form>
 
-                            <form method="post" asp-action="AddToList">
-                                <button type="submit" class="listButton btn bg-custom-button w-100 mb-3" name="listType" value="Favorita">
-                                    <i class="fa-solid fa-heart"></i> Favorita
-                                </button>
-                                <input type="hidden" name="idFilm" class="idFilm" />
-                            </form>
+                        <form method="post" asp-action="AddToList">
+                            <button type="submit" class="listButton btn bg-custom-button w-100 mb-3" name="listType" value="Favorita">
+                                <i class="fa-solid fa-heart"></i> Favorita
+                            </button>
+                            <input type="hidden" name="idFilm" class="idFilm" />
+                        </form>
 
-                            <form method="post" asp-action="AddToList">
-                                <button type="submit" class="listButton btn bg-custom-button w-100 mb-3" name="listType" value="Abandonada">
-                                    <i class="fa-regular fa-trash-can"></i> Abandonada
-                                </button>
-                                <input type="hidden" name="idFilm" class="idFilm" />
-                            </form>
-                        </div>
+                        <form method="post" asp-action="AddToList">
+                            <button type="submit" class="listButton btn bg-custom-button w-100 mb-3" name="listType" value="Abandonada">
+                                <i class="fa-regular fa-trash-can"></i> Abandonada
+                            </button>
+                            <input type="hidden" name="idFilm" class="idFilm" />
+                        </form>
                     </div>
                 </div>
             </div>
-        } 
-        else 
+        </div>
+        /*else 
         {
             <h3 class="text-white mt-4">Películas encontradas</h3>
-        }
+        }*/
     }
     <!--Modal de filtros-->
     <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">

@@ -86,8 +86,10 @@ body {
         background-color: rgba(255, 255, 255, 0.5);
     }
 
+.border-custom {
+    border: 1px solid #F4C430 !important;
+}
 /*Firefox*/
-
 .movie-scroll-container {
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
