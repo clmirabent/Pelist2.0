@@ -1,24 +1,23 @@
 @model List<Films.Models.User>
 
+<link rel="stylesheet" href="~/css/friends.css" />
 
-@{
-    <link rel="stylesheet" href="~/css/friends.css" />
-}
 <div class="container">
-    <!-- SEARCH SECTION-->
+    <!-- SEARCH SECTION -->
     <div class="row my-3">
-        <div class="col-12 ">
-            <form asp-action="SearchFriend" method="get" class="form-inline">
+        <div class="col-12">
+            <form asp-action="SearchUsers" asp-controller="Friend" method="get" class="form-inline">
                 <div class="input-group w-80">
-                    <input style="background-color: rgba(255, 255, 255, 0.1);margin-top: 100px;"
-                           type="text"
-                           name="email"
+                    <input style="background-color: rgba(255, 255, 255, 0.1); margin-top: 100px;"
+                           type="search"
+                           name="searchUser"
                            class="form-control"
                            placeholder="Busca un amigo con su usuario"
-                           aria-label="Buscar por usuario"
-                           required />
+                           aria-label="Search" />
                     <div class="input-group-append">
-                        <button style="padding-left: 5px ;margin-top: 100px; margin-left: 20px;" type="submit" class="btn btn-warning">
+                        <button style="padding-left: 5px; margin-top: 100px; margin-left: 20px;" 
+                                type="submit" 
+                                class="btn btn-warning">
                             Buscar
                         </button>
                     </div>
@@ -27,6 +26,33 @@
         </div>
     </div>
 
+    <!-- SECCIÓN: Resultados de Búsqueda -->
+    @if (ViewBag.users != null && ((List<Films.Models.User>)ViewBag.users).Any())
+    {
+        <div class="container mt-5">
+            <h2>Resultados de búsqueda</h2>
+            <div class="list-group mb-4">
+                @foreach (var user in (List<Films.Models.User>)ViewBag.users)
+                {
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                       <span>
+                    <img src="@user.Image" alt="Imagen de @user.Username" class="rounded-circle img-fluid mb-3" style="width:100px;height:auto;" />
+                           @user.Username
+                    </span>
+                        <!-- Botón para enviar solicitud de amistad -->
+                        <form asp-action="SendFriendRequest" method="post" style="margin:0;">
+                            <input type="hidden" name="targetUserId" value="@user.IdUser" />
+                            <button type="submit" class="btn btn-outline-primary btn-sm">
+                                Enviar Solicitud
+                            </button>
+                        </form>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    <!-- SECCIÓN: Mis Amigos -->
     <div class="container mt-5">
         <h1>Mis Amigos</h1>
         @if (Model.Any())
@@ -35,8 +61,16 @@
                 @foreach (var friendUser in Model)
                 {
                     <div class="list-group-item d-flex justify-content-between align-items-center">
-                        <span>@friendUser.Username</span>
+                       <span>
+                    <img src="@friendUser.Image" alt="Imagen de @friendUser.Username" class="rounded-circle img-fluid mb-3" style="width:100px;height:auto;" />
+                           @friendUser.Username
+                    </span>
+                        <form asp-action="RemoveFriend" method="post" style="margin:0">
+                            <input type="hidden" name="friendId" value="@friendUser.IdUser" />
+                            <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                        </form>
                     </div>
+                    
                 }
             </div>
         }
@@ -45,4 +79,4 @@
             <p class="text-muted">Aún no tienes amigos agregados.</p>
         }
     </div>
-</div>l>
+</div>
