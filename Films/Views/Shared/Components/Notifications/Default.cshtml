@@ -1,0 +1,42 @@
+﻿@model List<Films.Models.ViewModels.FriendRequestViewModel>
+
+<div class="modal-body">
+    @if (Model.Any())
+    {
+        foreach (var friend in Model)
+        {
+            <div class="d-flex align-items-center justify-content-between mb-3 notification-item">
+                <div class="d-flex align-items-center">
+                    @if (!string.IsNullOrEmpty(friend.Image))
+                    {
+                        <img src="@friend.Image" alt="Imagen de @friend.Username" class="rounded-circle me-2" style="width:40px; height:40px; object-fit:cover;">
+                    }
+                    else
+                    {
+                        <img src="/images/default-user.png" alt="Usuario" class="rounded-circle me-2" style="width:40px; height:40px; object-fit:cover;">
+                    }
+                    <div>
+                        <p class="mb-0 fw-bold">@friend.Username</p>
+                        <small class="text-muted">Solicitud de amistad pendiente</small>
+                    </div>
+                </div>
+
+                <!-- Formulario de aceptar/rechazar -->
+                <form method="post" asp-controller="Friend" asp-action="HandleFriendRequest" class="d-flex gap-1">
+                    <input type="hidden" name="friendId" value="@friend.IdUser" />
+                    <button type="submit" name="actionType" value="accept" class="btn btn-success btn-sm">
+                        <i class="fa-solid fa-check"></i>
+                    </button>
+                    <button type="submit" name="actionType" value="reject" class="btn btn-danger btn-sm">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </form>
+            </div>
+        }
+    }
+    else
+    {
+        <p class="text-center text-muted">No tienes solicitudes pendientes.</p>
+    }
+</div>
+
