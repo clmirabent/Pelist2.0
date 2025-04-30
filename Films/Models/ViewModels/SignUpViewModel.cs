@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Films.Models.ViewModels
 {
@@ -6,10 +7,12 @@ namespace Films.Models.ViewModels
     {
         [Required(ErrorMessage = "El nombre de usuario es obligatorio")]
         [StringLength(20, ErrorMessage = "El nombre de usuario no puede tener más de 20 caracteres")]
+        [Remote(action: "IsUserNameAvailable", controller: "Authentication", ErrorMessage = "Este nombre de usuario ya está en uso.")]
         public string UserName { get; set; }
 
         [Required(ErrorMessage = "El email es obligatorio")]
         [EmailAddress]
+        [Remote(action: "IsEmailAvailable", controller: "Authentication", ErrorMessage = "Este email ya está registrado.")]
         public string Email { get; set; }
 
         [Required(ErrorMessage = "La contraseña es obligatoria")]

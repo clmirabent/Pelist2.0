@@ -3,10 +3,11 @@
 
 @{
     <link rel="stylesheet" href="~/css/profileDashboard.css" />
+    var sweetAlertMessage = TempData["SweetAlertMessage"] as string;
 }
 
 <div class="profile-wrapper container mt-5 d-flex flex-wrap justify-content-evenly">
-    <!-- SECCIÓN IZQUIERDA -->
+    <!-- LEFT SECTION -->
     <aside class="profile-sidebar column justify-content-center mb-5 text-center">
         <div class="col-12 col-md-12">
             <div class="profile-picture">
@@ -15,14 +16,14 @@
             </div>
         </div>
 
-        <!-- SECCIÓN DE LISTAS -->
+        <!-- LISTS SECTION-->
         <div class="list-section col-12 col-md-12 mt-4">
             <h3 style=" color: #F4C430;" class="section-title">Mis Listas</h3>
             @if (Model.TypeLists != null)
             {
                 foreach (var type in Model.TypeLists)
                 {
-                    // Buscar listas asociadas a este tipo
+                    // search typelist 
                     var listsOfType = Model.User.Lists?.Where(l => l.FkIdTypeList == type.IdListType);
 
                     string iconClass = type.IdListType switch
@@ -56,31 +57,22 @@
         </div>
     </aside>
 
-    <!-- SECCIÓN DERECHA -->
+    <!-- RIGHT SECTION -->
     <main class="profile-main">
-        <!-- AMIGOS -->
+        <!-- FRIENDS -->
         <div class="friends-header">
-            <h3 style="color: #F4C430">Amigos</h3>
-            @if (Model.User.FriendFkIdFriendNavigations != null && Model.User.FriendFkIdFriendNavigations.Any())
-            {
-                foreach (var friend in Model.User.FriendFkIdFriendNavigations)
-                {
-                    <p>@friend.FkIdFriendNavigation.Username</p>
-                }
-            }
-            else
-            {
-                <p>No tienes amigos aún.</p>
-            }
+            <a asp-controller="Account" asp-action="Friends" class="friends-link text-decoration-none">
+                <h3  style="color: #F4C430"> @Model.User.FriendFkIdFriendNavigations.Count() Amigos</h3> 
+            </a>
         </div>
 
-        <!-- SOBRE MÍ -->
+        <!-- ABOUT ME -->
         <div class="about-me mt-5">
             <h3 style=" color: #F4C430;">Sobre mí</h3>
             <p>@Model.User.AboutMe</p>
         </div>
 
-        <!-- COMENTARIOS -->
+        <!-- COMMENTS -->
         <div class="comments-section mt-5">
             <h3 style=" color: #F4C430;">Mis Comentarios</h3>
             @if (Model.User.Reviews != null && Model.User.Reviews.Any())
@@ -107,7 +99,20 @@
     </main>
 </div>
 
+<!-- Incluye la librería SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+<!-- Verifica si hay un mensaje en TempData y lo muestra -->
+@if (!string.IsNullOrEmpty(sweetAlertMessage))
+{
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: '@sweetAlertMessage'
+        });
+    </script>
+}
 
 
 
