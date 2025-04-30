@@ -10,7 +10,7 @@
     </div>
 
     <div class="auth-right">
-        <h2>Crea tu cuenta</h2>
+        <h1>Crea tu cuenta</h1>
         <form asp-action="SignUp" method="post" enctype="multipart/form-data">
             @Html.AntiForgeryToken()
             <div class="form-group">
@@ -32,12 +32,17 @@
                 <label>Foto de Perfil</label>
                 <input type="file" name="ProfileImage" accept="image/*" class="form-control" />
             </div>
-            <div class="form-group">
-                <label for="AboutMe">Sobre mí</label>
-                <textarea asp-for="AboutMe" class="form-control textarea-about" rows="4" placeholder="Cuéntanos algo sobre ti para tu perfil..."></textarea>
+            <div class="form-group position-relative">
+                <label for="AboutMe">Sobre mí <medium class="text-muted">(máx. 120 caracteres)</medium></label>
+                <textarea asp-for="AboutMe"
+                          class="form-control textarea-about"
+                          rows="4"
+                          maxlength="120"
+                          oninput="updateCharCount(this)"
+                          placeholder="Cuéntanos sobre ti"></textarea>
+                <div class="char-counter" id="charCount">0/120</div>
                 <span asp-validation-for="AboutMe" class="text-danger"></span>
             </div>
-
             <button type="submit" class="btn-submit">Registrarse</button>
         </form>
         <p>¿Ya tienes una cuenta? <a asp-action="Login">Log in</a></p>
@@ -63,5 +68,24 @@
         });
     </script>
 }
+
+<script>
+    function updateCharCount(textarea) {
+        const max = 120;
+        const currentLength = textarea.value.length;
+        const counter = document.getElementById('charCount');
+        counter.textContent = `${currentLength}/${max}`;
+
+        const percent = currentLength / max;
+
+        if (percent > 0.9) {
+            counter.style.color = '#dc3545'; // red
+        } else if (percent > 0.75) {
+            counter.style.color = '#fd7e14'; // orange
+        } else {
+            counter.style.color = '#6c757d'; // gray
+        }
+    }
+</script>
 
 

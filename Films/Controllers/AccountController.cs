@@ -1,6 +1,6 @@
 using System.Security.Claims;
 using Films.Context;
-
+using Films.Models;
 using Films.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
@@ -49,7 +49,8 @@ public class AccountController : Controller
         {
             User = user,
             TypeLists = typeLists,
-           
+            Friends = await GetFriends(user.IdUser),
+            FriendRequests = await GetFriendRequestReceived(user.IdUser)
         };
 
         return View(viewModel);
@@ -64,8 +65,22 @@ public class AccountController : Controller
         // Redirect to home
         return RedirectToAction("Index", "Home");
     }
-
     
+    public async Task<List<Friend>> GetFriendRequestReceived(int userId)
+    {
+        var friendRequestPending = await _context.Friends
+            .Where(f => f.FkIdUser == userId && f.PendingFriend == true)
+            .Include(friend => friend.FkIdFriendNavigation)
+            .ToListAsync();
+        return friendRequestPending;
+    }
+
+    public async Task<List<Friend>> GetFriends(int userId)
+    {
+        return await _context.Friends
+            .Where(f => (f.FkIdFriend == userId || f.FkIdUser == userId) && f.PendingFriend == false)
+            .ToListAsync();
+    }
 
     public int? GetUserIdFromClaims()
     {

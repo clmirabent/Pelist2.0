@@ -22,7 +22,7 @@ namespace Films.Models.ViewModels
 
         public IFormFile? ProfileImage { get; set; }
         
-        [MaxLength(200, ErrorMessage = "Máximo 200 caracteres.")]
+        [MaxLength(120, ErrorMessage = "Máximo 120 caracteres.")]
         public string AboutMe { get; set; }
 
     }

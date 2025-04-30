@@ -1,15 +1,16 @@
-body {
+ body {
     margin: 0;
     font-family: 'Segoe UI', sans-serif;
     background-color: #1e1e2f;
     color: white;
 }
 
-h1 {
+.h1{
     color: #F4C430;
     text-align: center;
     margin-bottom: 2rem;
 }
+
 
 .list-group-item {
     background-color: rgba(255, 255, 255, 0.1);
@@ -24,3 +25,22 @@ h1 {
 .list-group-item:hover {
     background-color: rgba(255, 255, 255, 0.2);
 }
+
+ .search-input {
+     background-color: transparent; /* o rgba(255,255,255,0.1) si quieres algo semitransparente */
+     color: #fff;                   /* texto blanco */
+ }
+
+ /* Placeholder en un tono más claro */
+ .search-input::placeholder {
+     color: rgba(255, 255, 255, 0.6);
+ }
+
+ /* Si quieres que al hacer focus mantenga el color blanco */
+ .search-input:focus {
+     color: #fff;
+     /* Opcional: quitar outline oscuro de Bootstrap */
+     box-shadow: none;
+     border-color: #fff;
+ }
+

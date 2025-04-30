@@ -20,8 +20,7 @@ public class FriendController : Controller
     {
         _context = context;
     }
-
-
+    
     public int? GetUserIdFromClaims()
     {
         if (int.TryParse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value, out var userId))
@@ -42,43 +41,105 @@ public class FriendController : Controller
             return RedirectToAction("Login", "Authentication");
         }
 
+        // Incluimos ambas colecciones para las relaciones de amistad
         var currentUser = await _context.Users
             .Include(u => u.FriendFkIdUserNavigations)
             .ThenInclude(f => f.FkIdFriendNavigation)
             .Include(u => u.FriendFkIdFriendNavigations)
+            .ThenInclude(f => f.FkIdUserNavigation)
             .SingleOrDefaultAsync(u => u.IdUser == id);
 
-        var friendUsers = currentUser?.FriendFkIdUserNavigations
-            .Where(f => !f.PendingFriend) // Se consideran amigos solo cuando PendingFriend es false (aceptado)
+        // Amistades donde el usuario es receptor (obtenemos al amigo mediante FkIdFriendNavigation)
+        var friendsReceived = currentUser?.FriendFkIdUserNavigations
+            .Where(f => !f.PendingFriend)
             .Select(f => f.FkIdFriendNavigation)
-            .ToList();
+            .ToList() ?? new List<User>();
 
-        return View("Friends", friendUsers);
+        // Amistades donde el usuario es emisor (en este caso, el amigo es obtenido mediante FkIdUserNavigation)
+        var friendsSent = currentUser?.FriendFkIdFriendNavigations
+            .Where(f => !f.PendingFriend)
+            .Select(f => f.FkIdUserNavigation)
+            .ToList() ?? new List<User>();
+
+        // Unión de ambas listas
+        var acceptedFriends = friendsReceived.Union(friendsSent).ToList();
+
+        var model = new FriendViewModel
+        {
+            Friends = acceptedFriends,
+            SearchResults = new List<User>(), // Vacío cuando solo se muestran "Mis Amigos"
+            SearchTerm = string.Empty
+        };
+
+        return View("Friends", model);
     }
+
 
     // SearchUsers
 
-    [HttpGet]
-    public async Task<IActionResult> SearchUsers(string searchUser)
+   [HttpGet]
+public async Task<IActionResult> SearchUsers(string searchUser)
+{
+    var id = GetUserIdFromClaims();
+    if (id == null)
     {
-        var id = GetUserIdFromClaims();
-        if (id == null)
-        {
-            TempData["SweetAlertMessage"] = "Por favor, inicia sesión para buscar amigos";
-            return RedirectToAction("Login", "Authentication");
-        }
-
-        var userSet = _context.Users;
-        var users = await userSet
-            .Where(u =>
-                u.IdUser != id && u.FriendFkIdFriendNavigations.All(f => f.FkIdFriend != id) &&
-                u.Username.Contains(searchUser ?? ""))
-            .ToListAsync();
-        
-        ViewBag.users = users;
-
-        return View("Friends", users);
+        TempData["SweetAlertMessage"] = "Por favor, inicia sesión para buscar amigos";
+        return RedirectToAction("Login", "Authentication");
     }
+    
+    // Primero, obtenemos los id's de relaciones existentes (aceptadas y pendientes)
+    var relatedFriendIdsQuery = _context.Friends
+        .Where(f => f.FkIdUser == id || f.FkIdFriend == id)
+        .Select(f => new { f.FkIdUser, f.FkIdFriend });
+    
+    var relatedFriendIdsList = await relatedFriendIdsQuery.ToListAsync();
+    
+    // Creamos una lista de ID a excluir (incluyendo el ID actual)
+    var excludeIds = new List<int> { id.Value };
+    foreach (var relation in relatedFriendIdsList)
+    {
+        if (!excludeIds.Contains(relation.FkIdUser))
+            excludeIds.Add(relation.FkIdUser);
+        if (!excludeIds.Contains(relation.FkIdFriend))
+            excludeIds.Add(relation.FkIdFriend);
+    }
+    
+    // Buscamos usuarios cuyo Username contenga el término y que no estén en la lista de excluidos
+    var users = await _context.Users
+        .Where(u => !excludeIds.Contains(u.IdUser) &&
+                    (searchUser == null || u.Username.Contains(searchUser)))
+        .ToListAsync();
+    
+    // Obtenemos nuevamente al usuario actual con todas las relaciones para sus amigos aceptados
+    var currentUser = await _context.Users
+        .Include(u => u.FriendFkIdUserNavigations)
+            .ThenInclude(f => f.FkIdFriendNavigation)
+        .Include(u => u.FriendFkIdFriendNavigations)
+            .ThenInclude(f => f.FkIdUserNavigation)
+        .SingleOrDefaultAsync(u => u.IdUser == id);
+    
+    var friendsReceived = currentUser?.FriendFkIdUserNavigations
+        .Where(f => !f.PendingFriend)
+        .Select(f => f.FkIdFriendNavigation)
+        .ToList() ?? new List<User>();
+    
+    var friendsSent = currentUser?.FriendFkIdFriendNavigations
+        .Where(f => !f.PendingFriend)
+        .Select(f => f.FkIdUserNavigation)
+        .ToList() ?? new List<User>();
+
+    var acceptedFriends = friendsReceived.Union(friendsSent).ToList();
+    
+    var model = new FriendViewModel
+    {
+        Friends = acceptedFriends,
+        SearchResults = users,
+        SearchTerm = searchUser
+    };
+
+    return View("Friends", model);
+}
+
 
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -91,37 +152,32 @@ public class FriendController : Controller
         }
 
         var existingFriendRequest = await _context.Friends.AnyAsync(f =>
-            f.FkIdUser == currentUserId && f.FkIdFriend == targetUserId ||
-            f.FkIdUser == targetUserId && f.FkIdFriend == currentUserId);
+            f.FkIdUser == targetUserId && f.FkIdFriend == currentUserId ||  f.FkIdUser == currentUserId && f.FkIdFriend == targetUserId)
         ;
         if (!existingFriendRequest)
         {
             var friendRequest = new Friend()
             {
-                FkIdUser = (int)currentUserId,
-                FkIdFriend = (int)targetUserId,
-                PendingFriend = false,
+                FkIdUser = (int)targetUserId, //esto es el que recibe la solicitud de amistad
+                FkIdFriend = (int)currentUserId, //esto es el que envia la solicitud de amistad 
+                PendingFriend = true,
             };
             _context.Friends.Add(friendRequest);
             await _context.SaveChangesAsync();
         }
         
-        
-
         return RedirectToAction("SearchUsers", new { searchUser = "" });
-
-        // RemoveFriend, SendFriendRequest, etc.
+        
     }
     
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> HandleFriendRequest(int friendId, string actionType)
     {
-        var userIdClaim = HttpContext.User.FindFirst("UserId");
-        int idUser = userIdClaim != null ? int.Parse(userIdClaim.Value) : 0;
+        var userIdClaim = GetUserIdFromClaims();
 
         var friendRequest = await _context.Friends
-            .FirstOrDefaultAsync(f => f.FkIdUser == idUser && f.FkIdFriend == friendId && f.PendingFriend == true);
+            .FirstOrDefaultAsync(f => f.FkIdFriend == friendId && f.FkIdUser == userIdClaim && f.PendingFriend == true);
 
         if (friendRequest == null)
         {
@@ -140,8 +196,42 @@ public class FriendController : Controller
 
         await _context.SaveChangesAsync();
 
-        return RedirectToAction("Index", "Home");
-
+        return RedirectToAction("Friends", "Friend");
     }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteFriend(int friendId)
+    {
+        var userIdClaim = GetUserIdFromClaims();
+        if (userIdClaim == null)
+        {
+            return BadRequest("Usuario no autenticado");
+        }
+
+        // Busca la relación de amistad en la tabla Friends
+        
+        var friendRequest = await _context.Friends.FirstOrDefaultAsync(f =>
+            (f.FkIdUser == userIdClaim && f.FkIdFriend == friendId) ||
+            (f.FkIdUser == friendId && f.FkIdFriend == userIdClaim));
+
+        if (friendRequest == null)
+        {
+            return NotFound("No se encontró la solicitud de amistad.");
+        }
+        
+        var friendName = await _context.Users.FirstOrDefaultAsync(u => u.IdUser == friendId);
+
+
+        // Elimina la solicitud de amistad
+        _context.Friends.Remove(friendRequest);
+        await _context.SaveChangesAsync();
+        
+        // Asignamos el mensaje a TempData para que la vista lo pueda utilizar y mostrar el SweetAlert2
+        TempData["SweetAlertMessage"] = $"Has eliminado a {friendName.Username} de tus amigos.";
+        return RedirectToAction("Friends");
+    }
+
+    
 }
 
