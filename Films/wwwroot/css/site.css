@@ -23,3 +23,14 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.bg-nav, header, .bg-bell {
+    background-color: #1e1e2f;
+}
+
+.bg-bell {
+    filter: invert(1);
+    background-color: #e1e1d0;
+}
+
+

@@ -87,7 +87,8 @@ namespace Films.Controllers
             } 
             else
             {
-                var filteredMovies = await _tmdbService.GetMoviesAsync(2);
+                var filteredMovies = await _tmdbService.SearchMoviesByTitleAsync(search);
+                /*var filteredMovies = await _tmdbService.GetMoviesAsync(2);
 
                 // Filtrar por género
                 if (genre.HasValue && genre.Value != 0)
@@ -130,6 +131,7 @@ namespace Films.Controllers
 
                 // Añadir valoraciones
                 AddReviewsToMovies(filteredMovies, moviesReviews);
+                */
 
                 var userIdClaim = User.FindFirst("UserId");
                 int idUser = userIdClaim != null ? int.Parse(userIdClaim.Value) : 0;

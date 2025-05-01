@@ -105,6 +105,41 @@ namespace Films.Services
 
                 return data?.Cast ?? new List<CastMember>();
             }
+
+            public async Task<List<Movie>> SearchMoviesByTitleAsync(string title)
+            {
+                if (string.IsNullOrWhiteSpace(title))
+                    return new List<Movie>();
+
+                var allMovies = new List<Movie>();
+                int page = 1;
+                int maxMovies = 60; 
+                int moviesPerPage = 20;
+
+                while (allMovies.Count < maxMovies)
+                {
+                    var response = await _httpClient.GetAsync($"search/movie?api_key={_apiKey}&language=es-ES&query={Uri.EscapeDataString(title)}&page={page}");
+
+                    if (!response.IsSuccessStatusCode)
+                        break;
+
+                    var json = await response.Content.ReadAsStringAsync();
+                    var data = JsonConvert.DeserializeObject<MoviesResponse>(json);
+
+                    if (data?.Results == null || data.Results.Count == 0)
+                        break;
+
+                    allMovies.AddRange(data.Results);
+
+                    if (data.Results.Count < moviesPerPage)
+                        break; 
+
+                    page++;
+                }
+
+                return allMovies.Take(maxMovies).ToList();
+            }
+
         }
     }
 }

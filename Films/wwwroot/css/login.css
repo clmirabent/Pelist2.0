@@ -120,3 +120,7 @@ a {
     background-color: #F4C430;
     color: #1e1e2f;
 }
+.nav-item {
+    width: 56px;
+    height: 56px;
+}

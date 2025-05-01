@@ -199,3 +199,32 @@ p{
     opacity: 1;
     transform: translateY(0);
 }
+
+.margin-for-footer {
+    margin-bottom: 400px;
+}
+
+/*Estilos del formulario de comentarios*/
+
+.star {
+    font-size: 2rem;
+    color: #ccc;
+    cursor: pointer;
+}
+
+    .star.selected {
+        color: gold;
+    }
+
+.bg-custom-button {
+    background-color: #F4C430;
+    color: black;
+}
+
+    .bg-custom-button:hover {
+        background-color: #e0b423;
+    }
+
+.border-radius {
+    border-radius: 10px;
+}

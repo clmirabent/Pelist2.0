@@ -21,6 +21,18 @@ body {
     scroll-behavior: smooth;
 }
 
+.movie-vertical-container {
+    display: flex;
+    flex-wrap: wrap; /* Permite que las películas bajen a la siguiente fila */
+    gap: 20px;
+    padding: 20px 0px;
+    justify-content: center; /* Opcional: centra las filas */
+}
+
+.movie-vertical-container .movie-card {
+    width: 250px;
+}
+
 .movie-card {
     min-width: 300px;
     flex-shrink: 0;
