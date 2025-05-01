@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Films.Models;
 
@@ -27,4 +28,7 @@ public partial class User
     public virtual ICollection<Preference> Preferences { get; set; } = new List<Preference>();
 
     public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
+    
+    [NotMapped]
+    public string FriendshipStatus { get; set; }
 }
