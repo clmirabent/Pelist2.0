@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using static Films.Services.TmbdService;
 using Films.Models.ViewModels;
+using Microsoft.EntityFrameworkCore;
+using Films.Models;
 
 namespace Films.Controllers
 {
@@ -26,6 +28,29 @@ namespace Films.Controllers
             if (movie == null)
                 return NotFound();
 
+            var userIdClaim = User.FindFirst("UserId");
+            int idUser = userIdClaim != null ? int.Parse(userIdClaim.Value) : 0;
+
+            var userLists = await _context.Lists
+                .Where(l => l.FkIdUser == idUser)
+                .ToListAsync();
+
+            // Recuperar la nota de review promedio de esta peli
+            var review = _context.MovieReviews.FirstOrDefault(r => r.FkIdMovie == movie.Id);
+            movie.Review = review?.AverageRating ?? 0;
+
+            var genreIds = movie.Genres.Select(g => g.Id).ToList();
+            int genreIdToUse = genreIds.FirstOrDefault();
+
+            var relatedMovies = (await _tmdbService.GetMoviesByGenreAsync(genreIdToUse))
+                .Where(m => m.Id != movie.Id)
+                .Take(30) // limitar la cantidad
+                .ToList();
+
+            // Obtener la lista de actores
+            var actors = await _tmdbService.GetPopularActorsByMovieId(movie.Id);
+            movie.Persons = actors;
+
             var vm = new MovieDetailsViewModel
             {
                 Id = movie.Id,
@@ -33,9 +58,12 @@ namespace Films.Controllers
                 Genres = movie.Genres,
                 Review = movie.Review,
                 Overview = movie.Overview,
+                UserMovieLists = userLists,
                 PosterPath = movie.PosterPath,
                 BackdropPath = movie.BackdropPath,
                 ReleaseDate = DateTime.Parse(movie.ReleaseDate),
+                RelatedMovies = relatedMovies,
+                Persons = movie.Persons
             };
 
             return View(vm);

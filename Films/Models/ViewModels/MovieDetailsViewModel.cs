@@ -12,17 +12,20 @@ namespace Films.Models.ViewModels
         public string Overview { get; set; }
         public string PosterPath { get; set; }
         public string BackdropPath { get; set; } // Agregado para la vista de detalle
+        public List<Movie> RelatedMovies { get; set; } = new();
         public DateTime? ReleaseDate { get; set; }
         public double Rating { get; set; }
-        public decimal Review { get; set; } = 0;
+        public decimal Review { get; set; }
         public List<Genre> Genres { get; set; } = new List<Genre>();
+        public List<People> Persons { get; set; } = new List<People>();
+
 
         // Estado del usuario (opcional)
         public bool? IsFavorite { get; set; }
         public bool? IsWatched { get; set; }
         public bool? IsPending { get; set; }
         public bool? IsAbandoned { get; set; }
-
+        public List<List> UserMovieLists { get; set; }
         public bool MostrarEstadoUsuario => IsFavorite != null; // True si hay sesión y datos
     }
 }

@@ -6,6 +6,25 @@
 }
 
 @{
+    // Lista de personas que viene de ViewModel
+    var persons = Model.Persons;
+    // Filtrar por los actores
+    var actors = persons
+        .Where(p => p.Department == "Acting")
+        .Take(4)
+        .ToList();
+
+    // Filtrar por los directores
+    var directors = persons
+    .Where(p => p.Department == "Director")
+    .ToList();
+
+    var currentList = Model.UserMovieLists
+        .FirstOrDefault(l => l.FkIdMovie == Model.Id);
+    int type = 0;
+    if(currentList != null)
+        type = currentList.FkIdTypeList; // 1. pendiente, 2. completada, 3. favorita, 4. abandonada
+
     string scoreClass = "low";
     if (Model.Review >= 9)
     {
@@ -21,8 +40,51 @@
     }
 }
 
-
 <div class="movie-detail-container">
+    <!--Modal de listas-->
+    <div class="modal fade" id="movieModal" tabindex="-1" aria-labelledby="movieModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark text-white">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="movieModalLabel">Mover a una lista</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" action="/Home/AddToList">
+                        <button type="submit" class="listButton btn bg-custom-button w-100 mb-3" name="listType" value="Pendiente">
+                            <i class="fa-regular fa-hourglass-half"></i> Pendiente
+                        </button>
+                        <input type="hidden" name="idFilm" class="idFilm" value="@Model.Id" />
+                        <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                    </form>
+
+                    <form method="post" action="/Home/AddToList">
+                        <button type="submit" class="listButton btn bg-custom-button w-100 mb-3" name="listType" value="Completada">
+                            <i class="fa-solid fa-check"></i> Completada
+                        </button>
+                        <input type="hidden" name="idFilm" class="idFilm" value="@Model.Id" />
+                        <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                    </form>
+
+                    <form method="post" action="/Home/AddToList">
+                        <button type="submit" class="listButton btn bg-custom-button w-100 mb-3" name="listType" value="Favorita">
+                            <i class="fa-solid fa-heart"></i> Favorita
+                        </button>
+                        <input type="hidden" name="idFilm" class="idFilm" value="@Model.Id" />
+                        <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                    </form>
+
+                    <form method="post" action="/Home/AddToList">
+                        <button type="submit" class="listButton btn bg-custom-button w-100 mb-3" name="listType" value="Abandonada">
+                            <i class="fa-regular fa-trash-can"></i> Abandonada
+                        </button>
+                        <input type="hidden" name="idFilm" class="idFilm" value="@Model.Id" />
+                        <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="movie-detail-banner" style="background-image: url('https://image.tmdb.org/t/p/original/@Model.BackdropPath');">
         <div class="banner-overlay">
             <div class="banner-content container">
@@ -41,20 +103,45 @@
                     </div>
                     <div class="movie-actions">
                         <div class="action-wrapper">
-                            <button class="action-btn"><i class="fa-regular fa-hourglass-half"></i></button>
-                            <span class="tooltip">Pendiente</span>
+                            <form method="post" action="/Home/AddToList">
+                                <button type="submit" class="action-btn @(type == 1 ? "active" : "")" name="listType" value="Pendiente">
+                                    <i class="fa-regular fa-hourglass-half"></i>
+                                </button>
+                                <input type="hidden" name="idFilm" class="idFilm" value="@Model.Id" />
+                                <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                                <span class="tooltip">Pendiente</span>
+                            </form>
                         </div>
                         <div class="action-wrapper">
-                            <button class="action-btn"><i class="fa-solid fa-check"></i></button>
-                            <span class="tooltip">Completada</span>
+                            <form method="post" action="/Home/AddToList">
+                                <button type="submit" class="action-btn @(type == 2 ? "active" : "")" name="listType" value="Completada">
+                                    <i class="fa-solid fa-check"></i>
+                                </button>
+                                <input type="hidden" name="idFilm" class="idFilm" value="@Model.Id" />
+                                <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                                <span class="tooltip">Completada</span>
+
+                            </form>
                         </div>
                         <div class="action-wrapper">
-                            <button class="action-btn"><i class="fa-solid fa-heart"></i></button>
-                            <span class="tooltip">Favorita</span>
+                            <form method="post" action="/Home/AddToList">
+                                <button class="action-btn @(type == 3 ? "active" : "")" type="submit" name="listType" value="Favorita">
+                                    <i class="fa-solid fa-heart"></i>
+                                </button>
+                                <input type="hidden" name="idFilm" class="idFilm" value="@Model.Id" />
+                                <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                                <span class="tooltip">Favorita</span>
+                            </form>
                         </div>
                         <div class="action-wrapper">
-                            <button class="action-btn"><i class="fa-regular fa-trash-can"></i></button>
-                            <span class="tooltip">Abandonada</span>
+                            <form method="post" action="/Home/AddToList">
+                                <button class="action-btn @(type == 4 ? "active" : "")" type="submit" name="listType" value="Abandonada">
+                                    <i class="fa-regular fa-trash-can"></i>
+                                </button>
+                                <span class="tooltip">Abandonada</span>
+                                <input type="hidden" name="idFilm" class="idFilm" value="@Model.Id" />
+                                <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                            </form>
                         </div>
                     </div>
 
@@ -66,11 +153,87 @@
     </div>
 
     <div class="container movie-detail-body">
-        <p class="sinopsis"><strong>Sinopsis</strong></p>
-        <p>@Model.Overview</p>
-        <p><strong>Review:</strong> @Model.Review</p>
+        <div class="movie-detail-sinopsis">
+            <p class="sinopsis"><strong>Sinopsis</strong></p>
+            <p>@Model.Overview</p>
+        </div>
+
+        <div class="movie-detail-actors">
+            <p> <strong>Actores destacados</strong> </p>
+            <div class="actor-pics">
+                @foreach (var actor in actors)
+                {
+                    <div class="actor-item">
+                        <img src="https://image.tmdb.org/t/p/w185/@actor.ProfilePath" alt="@actor.Name" />
+                        <span>@actor.Name</span>
+                    </div>
+                }
+            </div>
+            
+        </div>
     </div>
+
+    @if (Model.RelatedMovies?.Any() == true)
+    {
+        <div class="container related-movies">
+            <h4>Películas relacionadas</h4>
+            <div class="movie-scroll-container">
+                @foreach (var movie in Model.RelatedMovies)
+                {
+					var movieList = Model.UserMovieLists
+					.FirstOrDefault(l => l.FkIdMovie == movie.Id);
+                    string listSymbol = "";
+                    if (movieList != null)
+                    {
+                        switch (movieList.FkIdTypeList)
+                        {
+                            case 1: listSymbol = "fa-hourglass-half"; break;
+                            case 2: listSymbol = "fa-check"; break;
+                            case 3: listSymbol = "fa-heart"; break;
+                            case 4: listSymbol = "fa-trash-can"; break;
+                        }
+                    }
+
+                    <div class="movie-container" style="position: relative;">
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <button id="@movie.Id"
+                                    class="movieBtn"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#movieModal"
+                                    data-id="@movie.Id"
+                                    data-list-type="@movieList?.FkIdTypeList">
+                                @if (string.IsNullOrEmpty(listSymbol))
+                                {
+                                    <i class="fa-solid fa-plus fa-sm"></i>
+                                }
+                                else
+                                {
+                                    <i class="fa-solid @listSymbol fa-sm"></i>
+                                }
+                            </button>
+                        }
+
+                        <a href="/movie/@movie.Id/detail" class="text-decoration-none">
+                            <div class="movie-card">
+                                <div class="movieImg" style="background-image: url('https://image.tmdb.org/t/p/w500/@movie.PosterPath');">
+                                </div>
+                                <p class="text-white">
+                                    @(movie.Title.Length > 30 ? movie.Title.Substring(0, 30) + "..." : movie.Title)
+                                </p>
+                                <p class="text-white">★ @movie.Review.ToString("0.0") | @(DateTime.Parse(movie.ReleaseDate).Year)</p>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+            
+
+
+        </div>
+    }
 </div>
 
-
-
+@section Scripts {
+    <script src="~/js/home.js?v=@DateTime.Now.Ticks"></script>
+}
