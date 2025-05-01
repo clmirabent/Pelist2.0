@@ -19,6 +19,8 @@ namespace Films.Models.ViewModels
 
         public List<Genre> Genres { get; set; } = new List<Genre>();
         public List<People> Persons { get; set; } = new List<People>();
+        public Dictionary<int, int> ReviewUserStates { get; set; } = new(); // Se necesita para asociar en qué estado tenía a esta película el autor justo cuando hizo la review
+
 
 
         // Estado del usuario (opcional)

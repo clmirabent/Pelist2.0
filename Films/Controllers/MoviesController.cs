@@ -57,7 +57,14 @@ namespace Films.Controllers
                 .Where(r => r.FkIdMovie == movie.Id)
                 .OrderByDescending(r => r.IdReview)
                 .ToListAsync();
-                
+
+            var reviewUserIds = reviews.Select(r => r.FkIdUser).Distinct().ToList();
+
+            var userStates = await _context.Lists
+                .Where(l => l.FkIdMovie == movie.Id && reviewUserIds.Contains(l.FkIdUser))
+                .ToDictionaryAsync(l => l.FkIdUser, l => l.FkIdTypeList);
+
+
             var vm = new MovieDetailsViewModel
             {
                 Id = movie.Id,
@@ -71,7 +78,8 @@ namespace Films.Controllers
                 BackdropPath = movie.BackdropPath,
                 ReleaseDate = DateTime.Parse(movie.ReleaseDate),
                 RelatedMovies = relatedMovies,
-                Persons = movie.Persons
+                Persons = movie.Persons,
+                ReviewUserStates = userStates
             };
 
             return View(vm);

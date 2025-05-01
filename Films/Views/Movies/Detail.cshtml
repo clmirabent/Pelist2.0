@@ -9,6 +9,7 @@
 @{
     // Lista de personas que viene de ViewModel
     var persons = Model.Persons;
+
     // Filtrar por los actores
     var actors = persons
         .Where(p => p.Department == "Acting")
@@ -240,9 +241,12 @@
 
             @foreach (var review in Model.Reviews)
             {
-                var estado = Model.UserMovieLists
-                .FirstOrDefault(l => l.FkIdMovie == review.FkIdMovie && l.FkIdUser == review.FkIdUser);
-                string estadoTexto = estado?.FkIdTypeList switch
+
+                int? tipo = Model.ReviewUserStates.ContainsKey(review.FkIdUser)
+                ? Model.ReviewUserStates[review.FkIdUser]
+                : null;
+
+                string estadoTexto = tipo switch
                 {
                     1 => "Pendiente",
                     2 => "Completada",
@@ -250,13 +254,13 @@
                     4 => "Abandonada",
                     _ => "Sin estado"
                 };
-                    
 
                 <div class="review-item d-flex gap-3 p-3 mb-4 rounded">
                     <!-- Foto del usuario -->
-                    <div class="user-photo rounded-circle d-flex justify-content-center align-items-center">
-                        <span>Foto</span>
+                    <div class="user-photo">
+                        <img src="@review.FkIdUserNavigation?.Image" alt="@review.FkIdUserNavigation?.Username" />
                     </div>
+
 
                     <!-- Contenido del comentario -->
                     <div class="flex-grow-1">
