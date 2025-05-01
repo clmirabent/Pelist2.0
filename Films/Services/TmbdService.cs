@@ -81,6 +81,17 @@ namespace Films.Services
                 return data?.Results ?? new List<People>();
             }
 
+            public async Task<List<People>> GetPopularActorsByMovieId(int movieId)
+            {
+                var response = await _httpClient.GetAsync($"movie/{movieId}/credits?api_key={_apiKey}&language=es-ES");
+                response.EnsureSuccessStatusCode();
+
+                var json = await response.Content.ReadAsStringAsync();
+                var data = JsonConvert.DeserializeObject<PeopleResponse>(json);
+
+                return data?.Crew ?? new List<People>();
+            }
+
             public async Task<Movie> GetMovieById(int movieId)
             {
                 var response = await _httpClient.GetAsync($"movie/{movieId}?api_key={_apiKey}&language=es-ES");

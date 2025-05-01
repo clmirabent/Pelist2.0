@@ -45,12 +45,43 @@ namespace Films.Controllers
             return View();
         }
 
+        // Acción que valida si el nombre de usuario está disponible.
+        [AcceptVerbs("GET", "POST")]
+        public async Task<IActionResult> IsUserNameAvailable(string userName)
+        {
+            if (string.IsNullOrEmpty(userName))
+            {
+                return Json(true);
+            }
+        
+            var exists = await _context.Users.AnyAsync(u => u.Username == userName);
+            if (exists)
+            {
+                return Json($"Este nombre de usuario ya está en uso. Por favor, elige otro.");
+            }
+            return Json(true);
+        }
+    
+        // Acción que valida si el email está disponible.
+        [AcceptVerbs("GET", "POST")]
+        public async Task<IActionResult> IsEmailAvailable(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                return Json(true);
+            }
+            var exists = await _context.Users.AnyAsync(u => u.Email == email);
+            if (exists)
+            {
+                return Json($"Este email ya está registrado.");
+            }
+            return Json(true);
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
-          
             if (ModelState.IsValid)
             {
                 // verify if user exists
@@ -97,12 +128,19 @@ namespace Films.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (await _context.Users.AnyAsync(u => u.Email == model.Email))
-                {
-                    // Save the error in TempData and redirect to the same page
-                    TempData["SignUpError"] = "Este email ya está registrado.";
-                    return RedirectToAction("SignUP");
-                }
+                //// Verify if email already exists
+              //  if (await _context.Users.AnyAsync(u => u.Email == model.Email))
+               // {
+              //      ModelState.AddModelError("Email", "Este email ya está registrado.");
+              //      return View(model);;
+              //  }
+                
+                // Verify if username already exists
+             //   if (await _context.Users.AnyAsync(u => u.Username == model.UserName))
+             //   {
+             //       ModelState.AddModelError(nameof(model.UserName), "Este nombre de usuario ya está en uso.");
+             //       return View(model);
+             //   }
 
                 PasswordHelper.CreatePasswordHash(model.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
@@ -117,7 +155,6 @@ namespace Films.Controllers
                     imageUrl =
                         "https://res.cloudinary.com/duc5qq3mn/image/upload/v1744890605/profile-icon-design-free-vector_m86jfn.jpg";
                 } 
-
                 var user = new User
                 {
                     Username = model.UserName,

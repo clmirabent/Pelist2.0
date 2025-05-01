@@ -199,7 +199,7 @@ namespace Films.Controllers
             }
         }
 
-        public async Task<IActionResult> AddToList(string listType, int idFilm)
+        public async Task<IActionResult> AddToList(string listType, int idFilm, string returnUrl)
         {
             var userIdClaim = User.FindFirst("UserId");
             int idUser = userIdClaim != null ? int.Parse(userIdClaim.Value) : 0;
@@ -216,7 +216,7 @@ namespace Films.Controllers
                 {
                     _context.Lists.Remove(existingEntry);
                     await _context.SaveChangesAsync();
-                    return RedirectToAction("Index");
+                    return Redirect(returnUrl ?? Url.Action("Index", "Home"));
                 }
 
                 _context.Lists.Remove(existingEntry);
@@ -232,7 +232,8 @@ namespace Films.Controllers
 
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Index", "Home");
+            return Redirect(returnUrl ?? Url.Action("Index", "Home"));
+
         }
 
         [HttpPost]
