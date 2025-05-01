@@ -15,6 +15,27 @@ namespace Films.Services
             {
                 _httpClient = httpClientFactory.CreateClient("TMDb");
             }
+            public async Task<List<Movie>> GetMoviesAsync(int totalPages)
+            {
+                var allMovies = new List<Movie>();
+
+                for (int page = 1; page <= totalPages; page++)
+                {
+                    var response = await _httpClient.GetAsync($"movie/popular?api_key={_apiKey}&language=es-ES&page={page}");
+
+                    if (!response.IsSuccessStatusCode) break;
+
+                    var json = await response.Content.ReadAsStringAsync();
+                    var data = JsonConvert.DeserializeObject<MoviesResponse>(json);
+
+                    if (data?.Results != null)
+                    {
+                        allMovies.AddRange(data.Results);
+                    }
+                }
+
+                return allMovies;
+            }
 
             public async Task<List<Movie>> GetPopularMovieAsync()
             {
@@ -24,7 +45,7 @@ namespace Films.Services
                 var json = await response.Content.ReadAsStringAsync();
                 var data = JsonConvert.DeserializeObject<MoviesResponse>(json);
 
-                return data?.Results?.Take(30).ToList() ?? new List<Movie>();
+                return data?.Results?.Take(20).ToList() ?? new List<Movie>();
             }
 
             public async Task<List<Movie>> GetMoviesByGenreAsync(int genreId)
@@ -35,7 +56,7 @@ namespace Films.Services
                 var json = await response.Content.ReadAsStringAsync();
                 var data = JsonConvert.DeserializeObject<MoviesResponse>(json);
 
-                return data?.Results?.Take(30).ToList() ?? new List<Movie>();
+                return data?.Results?.Take(20).ToList() ?? new List<Movie>();
             }
 
             public async Task<List<Genre>> GetGenresAsync()
@@ -79,13 +100,22 @@ namespace Films.Services
                 var json = await response.Content.ReadAsStringAsync();
                 var data = JsonConvert.DeserializeObject<Movie>(json);
 
-                // Asegurar que data no sea null 
                 if (data == null)
                     throw new Exception("Error al obtener la película");
 
                 return data;
             }
 
+            public async Task<List<CastMember>> GetMovieCastAsync(int movieId)
+            {
+                var response = await _httpClient.GetAsync($"movie/{movieId}/credits?api_key={_apiKey}&language=es-ES");
+                response.EnsureSuccessStatusCode();
+
+                var json = await response.Content.ReadAsStringAsync();
+                var data = JsonConvert.DeserializeObject<CreditsResponse>(json);
+
+                return data?.Cast ?? new List<CastMember>();
+            }
         }
     }
 }
