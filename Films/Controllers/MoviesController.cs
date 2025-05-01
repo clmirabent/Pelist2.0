@@ -51,12 +51,20 @@ namespace Films.Controllers
             var actors = await _tmdbService.GetPopularActorsByMovieId(movie.Id);
             movie.Persons = actors;
 
+            // Recuperar las reviews
+            var reviews = await _context.Reviews
+                .Include(r => r.FkIdUserNavigation) // Incluye el usuario que escribió la review
+                .Where(r => r.FkIdMovie == movie.Id)
+                .OrderByDescending(r => r.IdReview)
+                .ToListAsync();
+                
             var vm = new MovieDetailsViewModel
             {
                 Id = movie.Id,
                 Title = movie.Title,
                 Genres = movie.Genres,
-                Review = movie.Review,
+                Review = movie.Review, // En singular, la "nota"  de la película
+                Reviews = reviews, // En plural, la lista de todos los comentarios de la peli
                 Overview = movie.Overview,
                 UserMovieLists = userLists,
                 PosterPath = movie.PosterPath,

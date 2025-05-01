@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="~/css/MovieDetail.css?v=@DateTime.Now.Ticks" />
 }
 
+
 @{
     // Lista de personas que viene de ViewModel
     var persons = Model.Persons;
@@ -14,14 +15,11 @@
         .Take(4)
         .ToList();
 
-    // Filtrar por los directores
-    var directors = persons
-    .Where(p => p.Department == "Director")
-    .ToList();
-
     var currentList = Model.UserMovieLists
         .FirstOrDefault(l => l.FkIdMovie == Model.Id);
+
     int type = 0;
+
     if(currentList != null)
         type = currentList.FkIdTypeList; // 1. pendiente, 2. completada, 3. favorita, 4. abandonada
 
@@ -38,6 +36,8 @@
     {
         scoreClass = "average";
     }
+
+
 }
 
 <div class="movie-detail-container">
@@ -90,7 +90,7 @@
             <div class="banner-content container">
                 <img class="poster" src="https://image.tmdb.org/t/p/w500/@Model.PosterPath" alt="@Model.Title" />
                 <div class="info">
-                    <h1>@Model.Title</h1>
+                    <h1>@Model.Title  (@Model.Id)</h1>
                     <div class="score @scoreClass">
                         <span class="score-value">@Model.Review</span>
                         <span class="score-label">Nota de los usuarios</span>
@@ -232,6 +232,69 @@
 
         </div>
     }
+
+    @if (Model.Reviews.Any())
+    {
+        <div class="container mt-5">
+            <h4 class="text-white mb-4">Comentarios de los usuarios</h4>
+
+            @foreach (var review in Model.Reviews)
+            {
+                var estado = Model.UserMovieLists
+                .FirstOrDefault(l => l.FkIdMovie == review.FkIdMovie && l.FkIdUser == review.FkIdUser);
+                string estadoTexto = estado?.FkIdTypeList switch
+                {
+                    1 => "Pendiente",
+                    2 => "Completada",
+                    3 => "Favorita",
+                    4 => "Abandonada",
+                    _ => "Sin estado"
+                };
+                    
+
+                <div class="review-item d-flex gap-3 p-3 mb-4 rounded">
+                    <!-- Foto del usuario -->
+                    <div class="user-photo rounded-circle d-flex justify-content-center align-items-center">
+                        <span>Foto</span>
+                    </div>
+
+                    <!-- Contenido del comentario -->
+                    <div class="flex-grow-1">
+                        <!-- Cabecera: estrellas y estado -->
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <div class="stars">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    if (i <= review.Rating)
+                                    {
+                                        <i class="fa-solid fa-star text-warning"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="fa-regular fa-star text-secondary"></i>
+                                    }
+                                }
+                            </div>
+                            <div class="user-state text-muted">
+                                <i class="fa-regular fa-gem me-1"></i> @estadoTexto
+                            </div>
+                        </div>
+
+                        <h6 class="fw-bold">@review.Title.ToUpper()</h6>
+                        <p class="mb-0">@review.Description</p>
+                    </div>
+                </div>
+
+            }
+        </div>
+    }
+    else
+    {
+        <div class="container mt-5">
+            <h5 class="text-muted">Esta película todavía no tiene comentarios.</h5>
+        </div>
+    }
+
 </div>
 
 @section Scripts {
