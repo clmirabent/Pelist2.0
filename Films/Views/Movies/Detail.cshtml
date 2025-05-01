@@ -41,6 +41,50 @@
 }
 
 <div class="movie-detail-container">
+    <!--Modal de listas-->
+    <div class="modal fade" id="movieModal" tabindex="-1" aria-labelledby="movieModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark text-white">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="movieModalLabel">Mover a una lista</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" action="/Home/AddToList">
+                        <button type="submit" class="listButton btn bg-custom-button w-100 mb-3" name="listType" value="Pendiente">
+                            <i class="fa-regular fa-hourglass-half"></i> Pendiente
+                        </button>
+                        <input type="hidden" name="idFilm" class="idFilm" value="@Model.Id" />
+                        <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                    </form>
+
+                    <form method="post" action="/Home/AddToList">
+                        <button type="submit" class="listButton btn bg-custom-button w-100 mb-3" name="listType" value="Completada">
+                            <i class="fa-solid fa-check"></i> Completada
+                        </button>
+                        <input type="hidden" name="idFilm" class="idFilm" value="@Model.Id" />
+                        <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                    </form>
+
+                    <form method="post" action="/Home/AddToList">
+                        <button type="submit" class="listButton btn bg-custom-button w-100 mb-3" name="listType" value="Favorita">
+                            <i class="fa-solid fa-heart"></i> Favorita
+                        </button>
+                        <input type="hidden" name="idFilm" class="idFilm" value="@Model.Id" />
+                        <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                    </form>
+
+                    <form method="post" action="/Home/AddToList">
+                        <button type="submit" class="listButton btn bg-custom-button w-100 mb-3" name="listType" value="Abandonada">
+                            <i class="fa-regular fa-trash-can"></i> Abandonada
+                        </button>
+                        <input type="hidden" name="idFilm" class="idFilm" value="@Model.Id" />
+                        <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="movie-detail-banner" style="background-image: url('https://image.tmdb.org/t/p/original/@Model.BackdropPath');">
         <div class="banner-overlay">
             <div class="banner-content container">
@@ -190,3 +234,6 @@
     }
 </div>
 
+@section Scripts {
+    <script src="~/js/home.js?v=@DateTime.Now.Ticks"></script>
+}
