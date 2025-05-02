@@ -4,10 +4,6 @@ p{
     padding: 0;
 }
 
-.movie-detail-container {
-    height: 100vh;
-}
-
 .movie-detail-banner {
     position: relative;
     height: 450px;

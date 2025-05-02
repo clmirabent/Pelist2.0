@@ -14,9 +14,9 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm bg-nav border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm bg-nav box-shadow inferior-shadow">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Pelist</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index"><img class="w-25" src="~/images/logo_pelist.png"/></a>
                 <button class="navbar-toggler" type="button"
                         data-bs-toggle="collapse"
                         data-bs-target="#navbarSupportedContent"
@@ -32,7 +32,7 @@
                         {
                             var imageUrl = User.Claims.FirstOrDefault(c => c.Type == "ImageUrl")?.Value ?? "https://res.cloudinary.com/duc5qq3mn/image/upload/v1744890605/profile-icon-design-free-vector_m86jfn.jpg";
 
-                            <li class="nav-item">
+                            <li class="me-3">
                                 <a class="nav-link" asp-area="" asp-controller="Account" asp-action="Profile">
                                     <img src="@imageUrl" alt="Foto de perfil"
                                          class="rounded-circle"
@@ -40,13 +40,13 @@
                                 </a>
                             </li>
 
-                            <li class="nav-item">
-                                <button class="border-0 p-0" data-bs-toggle="modal" data-bs-target="#notificationModal">
-                                    <img class="bg-bell p-0" src="~/images/notificationBell.png" alt="Notificaciones"
-                                         style="width:40px; height:40px; object-fit:cover;" />
+                            <li class="d-flex align-items-center me-5">
+                                <button class="d-flex border-0 bg-transparent position-relative p-0" data-bs-toggle="modal" data-bs-target="#notificationModal" style="width: 40px; height: 40px;">
+                                    <img class="bg-bell w-100 h-100" src="~/images/notification-bell.png" alt="Notificaciones" style="object-fit: cover;" />
+                                    @await Component.InvokeAsync("NotificationsCount")
                                 </button>
-                                @await Component.InvokeAsync("NotificationsCount")
                             </li>
+
 
                             <!--Modal de notificaciones-->
                             <div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">
@@ -61,7 +61,7 @@
                                 </div>
                             </div>
 
-                            <li class="nav-item">
+                            <li class="">
                                 <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
                                     <button type="submit" class="btn btn-logout">Cerrar sesión</button>
                                     @Html.AntiForgeryToken()
@@ -70,7 +70,7 @@
                         }
                         else
                         {
-                            <li class="nav-item">
+                            <li class="">
                                 <a asp-controller="Authentication" asp-action="Login" class="btn btn-login">Iniciar sesión</a>
                             </li>
                         }
@@ -79,17 +79,23 @@
             </div>
         </nav>
     </header>
-    <div>
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
-
-    @* <footer class="border-top footer text-muted position-relative"> *@
-    @*     <div class="container"> *@
-    @*         &copy; 2025 - Films - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a> *@
-    @*     </div> *@
-    @* </footer> *@
+    <main role="main">
+        @RenderBody()
+    </main>
+    <footer class="d-flex align-items-center justify-content-between mt-5 bg-nav box-shadow">
+        <img class="footer-image-size ms-5" src="~/images/logo_pelist_footer.png"/>
+        <div class="me-5">
+            <p>
+                <i class="fab fa-linkedin me-1 fs-3"></i><a class="text-white text-decoration-none fs-3" href="https://www.linkedin.com/in/alex-alcala-garcia-824963235/" target="_blank">Alex</a>
+            </p>
+            <p>
+                <i class="fab fa-linkedin me-1 fs-3"></i><a class="text-white text-decoration-none fs-3" href="#" target="_blank">Carla</a>
+            </p>
+            <p>
+                <i class="fab fa-linkedin me-1 fs-3"></i><a class="text-white text-decoration-none fs-3" href="https://www.linkedin.com/in/david-palac%C3%ADn-gim%C3%A9nez-64b5b3219/" target="_blank">David</a>
+            </p>
+        </div>
+    </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

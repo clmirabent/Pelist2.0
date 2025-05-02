@@ -1,20 +1,31 @@
-﻿const stars = document.querySelectorAll('#star-container .star');
-const ratingInput = document.getElementById('ratingInput');
+﻿document.addEventListener('DOMContentLoaded', () => {
+    const stars = document.querySelectorAll('#star-container .star');
+    const ratingInput = document.getElementById('ratingInput');
+    const submitButton = document.getElementById('submit-button-send-review');
 
-stars.forEach(star => {
-    star.addEventListener('click', () => {
-        const value = parseInt(star.getAttribute('data-value'));
+    // Desactiva el botón al cargar
+    submitButton.disabled = true;
 
-        // Guarda el valor
-        ratingInput.value = value;
+    stars.forEach(star => {
+        star.addEventListener('click', () => {
+            const value = parseInt(star.getAttribute('data-value'));
 
-        // Limpia todas
-        stars.forEach(s => s.classList.remove('selected'));
+            // Guarda el valor
+            ratingInput.value = value;
 
-        // Marca las correctas
-        stars.forEach(s => {
-            if (parseInt(s.getAttribute('data-value')) <= value) {
-                s.classList.add('selected');
+            // Limpia todas
+            stars.forEach(s => s.classList.remove('selected'));
+
+            // Marca las correctas
+            stars.forEach(s => {
+                if (parseInt(s.getAttribute('data-value')) <= value) {
+                    s.classList.add('selected');
+                }
+            });
+
+            // Activa el botón
+            if (value > 0) {
+                submitButton.disabled = false;
             }
         });
     });

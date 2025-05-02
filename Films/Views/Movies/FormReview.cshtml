@@ -73,7 +73,7 @@
         <div class="d-flex flex-column">
             <label for="titleReview">Asunto</label>
             <div class="d-flex align-items-center">
-                <input type="text" name="titleReview" class="form-control-sm me-2 border-radius" placeholder="Asunto..." required />
+                <input type="text" name="titleReview" class="form-control-sm me-2 border-radius-min" placeholder="Asunto..." required />
                 <div id="star-container">
                     <span class="star" data-value="1">&#9733;</span>
                     <span class="star" data-value="2">&#9733;</span>
@@ -88,7 +88,7 @@
 
         <input type="hidden" name="ratingInput" id="ratingInput" />
         <input type="hidden" name="idFilm" class="idFilm" value="@Model.Id" />
-        <button type="submit" class="btn bg-custom-button w-100 mt-3">Enviar</button>
+        <button type="submit" class="btn bg-custom-button w-100 mt-3" id="submit-button-send-review">Enviar</button>
     </form>
 </div>
 @section Scripts {

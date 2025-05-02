@@ -100,12 +100,52 @@ namespace Films.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult AddReview(string titleReview, string descriptionReview, int ratingInput, int idFilm)
         {
-            if (titleReview != null)
+            if (!string.IsNullOrWhiteSpace(titleReview) && !string.IsNullOrWhiteSpace(descriptionReview) && ratingInput > 0)
             {
-                
-            }
+                var userIdClaim = User.FindFirst("UserId");
+                int idUser = userIdClaim != null ? int.Parse(userIdClaim.Value) : 0;
 
-            return RedirectToAction("Index", "Home");
+                var review = new Review
+                {
+                    FkIdMovie = idFilm,
+                    Rating = ratingInput,
+                    Title = titleReview,
+                    Description = descriptionReview,
+                    FkIdUser = idUser
+                };
+
+                _context.Reviews.Add(review);
+                _context.SaveChanges();
+
+                //APARTADO PARA MOVIE REVIEW
+                var movieReviewEntry = _context.MovieReviews
+                .FirstOrDefault(mr => mr.FkIdMovie == idFilm);
+
+                if (movieReviewEntry == null)
+                {
+                    var movieReview = new MovieReview
+                    {
+                        FkIdMovie = idFilm,
+                        AverageRating = ratingInput
+                    };
+
+                    _context.MovieReviews.Add(movieReview);
+                    _context.SaveChanges();
+                }
+                else
+                {
+                    var ratings = _context.Reviews
+                        .Where(r => r.FkIdMovie == idFilm)
+                        .Select(r => r.Rating)
+                        .ToList();
+
+                    decimal average = (decimal)ratings.Sum() / ratings.Count;
+
+                    movieReviewEntry.AverageRating = average;
+                    _context.SaveChanges();
+                }
+            }
+            return RedirectToAction("Detail", "Movies", new { id = idFilm });
         }
     }
 }
