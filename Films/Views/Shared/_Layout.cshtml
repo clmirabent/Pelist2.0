@@ -82,20 +82,22 @@
     <main role="main">
         @RenderBody()
     </main>
-    <footer class="d-flex align-items-center justify-content-between mt-5 bg-nav box-shadow">
-        <img class="footer-image-size ms-5" src="~/images/logo_pelist_footer.png"/>
-        <div class="me-5">
-            <p>
-                <i class="fab fa-linkedin me-1 fs-3"></i><a class="text-white text-decoration-none fs-3" href="https://www.linkedin.com/in/alex-alcala-garcia-824963235/" target="_blank">Alex</a>
-            </p>
-            <p>
-                <i class="fab fa-linkedin me-1 fs-3"></i><a class="text-white text-decoration-none fs-3" href="#" target="_blank">Carla</a>
-            </p>
-            <p>
-                <i class="fab fa-linkedin me-1 fs-3"></i><a class="text-white text-decoration-none fs-3" href="https://www.linkedin.com/in/david-palac%C3%ADn-gim%C3%A9nez-64b5b3219/" target="_blank">David</a>
-            </p>
-        </div>
-    </footer>
+<footer class="d-flex align-items-center justify-content-between mt-5 bg-nav box-shadow">
+
+    <img class="footer-image-size ms-5" src="~/images/logo_pelist_footer.png"/>
+    <div class="me-5 footer-content">
+        <span class="fs-6">Creado por:</span>
+        <a class="fs-5" href="https://www.linkedin.com/in/alex-alcala-garcia-824963235/" style="color: #f7cb45"  target="_blank">
+            <i class="fab fa-linkedin me-1"></i>Alex
+        </a>
+        <a class="fs-5" href="https://www.linkedin.com/in/carlaleonmirabent" style="color: #f7cb45"  target="_blank">
+            <i class="fab fa-linkedin me-1"></i>Carla
+        </a>
+    <a  class="fs-5" href="https://www.linkedin.com/in/david-palac%C3%ADn-gim%C3%A9nez-64b5b3219/" style="color: #f7cb45" target="_blank">
+        <i class="fab fa-linkedin me-1"> </i> David
+    </a>
+    </div>
+</footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
