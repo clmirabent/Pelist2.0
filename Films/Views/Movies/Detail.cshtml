@@ -239,6 +239,26 @@
         <div class="container mt-5">
             <h4 class="text-white mb-4">Comentarios de los usuarios</h4>
 
+            <div class="mb-4 d-flex gap-2 flex-wrap">
+                <button class="btn btn-outline-light filter-btn" data-rating="all">Todas</button>
+                @for (int i = 1; i <= 5; i++)
+                {
+                    <button class="btn btn-outline-warning filter-btn" data-rating="@i">
+                        @for (int j = 1; j <= 5; j++)
+                        {
+                            if (j <= i)
+                            {
+                                <i class="fa-solid fa-star"></i>
+                            }
+                            else
+                            {
+                                <i class="fa-regular fa-star"></i>
+                            }
+                        }
+                    </button>
+                }
+            </div>
+
             @foreach (var review in Model.Reviews)
             {
 
@@ -255,7 +275,8 @@
                     _ => "Sin estado"
                 };
 
-                <div class="review-item d-flex gap-3 p-3 mb-4 rounded">
+                <div class="review-item d-flex gap-3 p-3 mb-4 rounded" data-rating="@review.Rating">
+
                     <!-- Foto del usuario -->
                     <div class="user-photo">
                         <img src="@review.FkIdUserNavigation?.Image" alt="@review.FkIdUserNavigation?.Username" />
@@ -290,7 +311,12 @@
                 </div>
 
             }
+            <div id="noReviewsMessage" class="text-muted mt-3" style="display: none;">
+                🔍 No hay comentarios que coincidan con este filtro.
+            </div>
         </div>
+        
+
     }
     else
     {
@@ -303,4 +329,38 @@
 
 @section Scripts {
     <script src="~/js/home.js?v=@DateTime.Now.Ticks"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll('.filter-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const selectedRating = button.getAttribute('data-rating');
+                    const reviews = document.querySelectorAll('.review-item');
+                    let visibleCount = 0;
+
+                    reviews.forEach(review => {
+                        const rating = review.getAttribute('data-rating');
+
+                        if (selectedRating === 'all' || parseInt(rating) === parseInt(selectedRating)) {
+                            review.classList.remove('hidden');
+                            visibleCount++;
+                        } else {
+                            review.classList.add('hidden');
+                        }
+                    });
+
+                // Mostrar u ocultar mensaje si no hay coincidencias
+                const noReviewsMessage = document.getElementById('noReviewsMessage');
+                if (visibleCount === 0) {
+                    noReviewsMessage.style.display = 'block';
+                } else {
+                    noReviewsMessage.style.display = 'none';
+                }
+
+                            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                            button.classList.add('active');
+                        });
+                    });
+                });
+    </script>
 }
