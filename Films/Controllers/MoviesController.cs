@@ -69,5 +69,83 @@ namespace Films.Controllers
             return View(vm);
         }
 
+        //BORRAR ESTO DESPUÉS DE PASAR EL FORMULARIO A LA VISTA DE DETALLE
+
+                                    [Route("movie/{id}/mr")]
+                                    public async Task<IActionResult> FormReview(int id)
+                                    {
+                                        var movie = await _tmdbService.GetMovieById(id);
+
+                                        if (movie == null)
+                                            return NotFound();
+
+                                        var vm = new MovieDetailsViewModel
+                                        {
+                                            Id = movie.Id,
+                                            Title = movie.Title,
+                                            Genres = movie.Genres,
+                                            Review = movie.Review,
+                                            Overview = movie.Overview,
+                                            PosterPath = movie.PosterPath,
+                                            BackdropPath = movie.BackdropPath,
+                                            ReleaseDate = DateTime.Parse(movie.ReleaseDate),
+                                        };
+
+                                        return View(vm);
+                                    }
+
+        //BORRAR 
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddReview(string titleReview, string descriptionReview, int ratingInput, int idFilm)
+        {
+            if (!string.IsNullOrWhiteSpace(titleReview) && !string.IsNullOrWhiteSpace(descriptionReview) && ratingInput > 0)
+            {
+                var userIdClaim = User.FindFirst("UserId");
+                int idUser = userIdClaim != null ? int.Parse(userIdClaim.Value) : 0;
+
+                var review = new Review
+                {
+                    FkIdMovie = idFilm,
+                    Rating = ratingInput,
+                    Title = titleReview,
+                    Description = descriptionReview,
+                    FkIdUser = idUser
+                };
+
+                _context.Reviews.Add(review);
+                _context.SaveChanges();
+
+                //APARTADO PARA MOVIE REVIEW
+                var movieReviewEntry = _context.MovieReviews
+                .FirstOrDefault(mr => mr.FkIdMovie == idFilm);
+
+                if (movieReviewEntry == null)
+                {
+                    var movieReview = new MovieReview
+                    {
+                        FkIdMovie = idFilm,
+                        AverageRating = ratingInput
+                    };
+
+                    _context.MovieReviews.Add(movieReview);
+                    _context.SaveChanges();
+                }
+                else
+                {
+                    var ratings = _context.Reviews
+                        .Where(r => r.FkIdMovie == idFilm)
+                        .Select(r => r.Rating)
+                        .ToList();
+
+                    decimal average = (decimal)ratings.Sum() / ratings.Count;
+
+                    movieReviewEntry.AverageRating = average;
+                    _context.SaveChanges();
+                }
+            }
+            return RedirectToAction("Detail", "Movies", new { id = idFilm });
+        }
     }
 }

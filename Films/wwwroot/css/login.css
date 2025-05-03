@@ -120,6 +120,10 @@ a {
     background-color: #F4C430;
     color: #1e1e2f;
 }
+.nav-item {
+    width: 56px;
+    height: 56px;
+}
 .textarea-about {
     border-radius: 0.75rem;
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);

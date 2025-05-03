@@ -1,0 +1,98 @@
+﻿@using Films.Models.ViewModels
+@model Films.Models.ViewModels.MovieDetailsViewModel
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/MovieDetail.css?v=@DateTime.Now.Ticks" />
+}
+
+@{
+    string scoreClass = "low";
+    if (Model.Review >= 9)
+    {
+        scoreClass = "excellent";
+    }
+    else if (Model.Review >= 7)
+    {
+        scoreClass = "good";
+    }
+    else if (Model.Review >= 5)
+    {
+        scoreClass = "average";
+    }
+}
+
+
+<div class="movie-detail-container margin-for-footer">
+    <div class="movie-detail-banner" style="background-image: url('https://image.tmdb.org/t/p/original/@Model.BackdropPath');">
+        <div class="banner-overlay">
+            <div class="banner-content container">
+                <img class="poster" src="https://image.tmdb.org/t/p/w500/@Model.PosterPath" alt="@Model.Title" />
+                <div class="info">
+                    <h1>@Model.Title</h1>
+                    <div class="score @scoreClass">
+                        <span class="score-value">@Model.Review</span>
+                        <span class="score-label">Nota de los usuarios</span>
+                    </div>
+                    <div class="genres">
+                        @foreach (var genre in Model.Genres)
+                        {
+                            <span class="genre-badge">@genre.Name</span>
+                        }
+                    </div>
+                    <div class="movie-actions">
+                        <div class="action-wrapper">
+                            <button class="action-btn"><i class="fa-regular fa-hourglass-half"></i></button>
+                            <span class="tooltip">Pendiente</span>
+                        </div>
+                        <div class="action-wrapper">
+                            <button class="action-btn"><i class="fa-solid fa-check"></i></button>
+                            <span class="tooltip">Completada</span>
+                        </div>
+                        <div class="action-wrapper">
+                            <button class="action-btn"><i class="fa-solid fa-heart"></i></button>
+                            <span class="tooltip">Favorita</span>
+                        </div>
+                        <div class="action-wrapper">
+                            <button class="action-btn"><i class="fa-regular fa-trash-can"></i></button>
+                            <span class="tooltip">Abandonada</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container movie-detail-body">
+        <p class="sinopsis"><strong>Sinopsis</strong></p>
+        <p>@Model.Overview</p>
+        <p><strong>Review:</strong> @Model.Review</p>
+    </div>
+
+    <form method="post" asp-action="AddReview" class="container mt-3">
+        <h3>Opiniones</h3>
+        <div class="d-flex flex-column">
+            <label for="titleReview">Asunto</label>
+            <div class="d-flex align-items-center">
+                <input type="text" name="titleReview" class="form-control-sm me-2 border-radius-min" placeholder="Asunto..." required />
+                <div id="star-container">
+                    <span class="star" data-value="1">&#9733;</span>
+                    <span class="star" data-value="2">&#9733;</span>
+                    <span class="star" data-value="3">&#9733;</span>
+                    <span class="star" data-value="4">&#9733;</span>
+                    <span class="star" data-value="5">&#9733;</span>
+                </div>
+            </div>
+        </div>
+        <label for="descriptionReview" class="form-label">Descripción</label>
+        <textarea name="descriptionReview" id="descriptionReview" class="form-control" rows="4" placeholder="Escribe tu reseña aquí..." required ></textarea>
+
+        <input type="hidden" name="ratingInput" id="ratingInput" />
+        <input type="hidden" name="idFilm" class="idFilm" value="@Model.Id" />
+        <button type="submit" class="btn bg-custom-button w-100 mt-3" id="submit-button-send-review">Enviar</button>
+    </form>
+</div>
+@section Scripts {
+    <script src="~/js/detail.js?v=@DateTime.Now.Ticks"></script>
+}
+
+
