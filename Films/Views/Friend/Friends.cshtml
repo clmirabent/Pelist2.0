@@ -1,0 +1,156 @@
+@using static Films.Models.ViewModels.UserProfileViewModel
+@model Films.Models.ViewModels.FriendViewModel
+
+<link rel="stylesheet" href="~/css/friends.css" />
+
+<div class="container">
+    <!-- SEARCH SECTION -->
+    <div class="row my-3">
+        <div class="col-12">
+            <form asp-action="SearchUsers" asp-controller="Friend" method="get" class="form-inline">
+                <div class="input-group w-80">
+                    <input style="background-color: rgba(255, 255, 255, 0.1); margin-top: 100px; color: #fff"
+                           type="search"
+                           name="searchUser"
+                           value="@Model.SearchTerm"
+                           class="form-control"
+                           placeholder ="Busca un amigo con su usuario"
+                           aria-label="Search" />
+                    <div class="input-group-append">
+                        <button style="margin-top: 100px; margin-left: 20px; padding: 0.6rem 2rem" 
+                                type="submit" 
+                                class="btn btn-warning">
+                            Buscar
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SECCIÓN: Resultados de Búsqueda -->
+    @if (!string.IsNullOrEmpty(Model.SearchTerm))
+    {
+        <div class="container mt-5">
+            <h2 style="color: #F4C430; text-align: center; margin-bottom: 2rem;">Resultados de búsqueda</h2>
+            @if (Model.SearchResults != null && Model.SearchResults.Any())
+            {
+                <div class="list-group mb-4">
+                    @foreach (var user in Model.SearchResults)
+                    {
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>
+                            <img src="@user.Image" alt="Imagen de @user.Username" class="rounded-circle img-fluid mb-3" style="width:100px;height:100px; margin-right: 15px" />
+                            @user.Username
+                        </span>
+                            <div>
+                                @if (!string.IsNullOrEmpty(user.FriendshipStatus))
+                                {
+                                    <!-- Si ya existe relación, se muestra el estado en lugar del botón -->
+                                    <span class="btn btn-outline-secondary disabled">
+                                    @user.FriendshipStatus
+                                </span>
+                                }
+                                else
+                                {
+                                    <!-- Si no existe relación, se muestra la opción para enviar solicitud -->
+                                    <form asp-action="SendFriendRequest" method="post">
+                                        <input type="hidden" name="targetUserId" value="@user.IdUser" />
+                                        <button type="submit" class="btn btn-outline-warning fade-button">
+                                            Enviar Solicitud
+                                        </button>
+                                    </form>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="alert text-center" style="background-color: transparent; color:white;  border: none; padding: 0;">
+                  El usuario <strong>@Model.SearchTerm</strong> no existe.
+                </div>
+            }
+        </div>
+    }
+    
+    <!-- SECCIÓN: Mis Amigos -->
+    <div class="container mt-5">
+        <h1 style="color: #F4C430; text-align: center">Mis Amigos</h1>
+        @if (Model.Friends != null && Model.Friends.Any())
+        {
+            <div class="list-group">
+                @foreach (var friendUser in Model.Friends)
+                {
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>
+                            <img src="@friendUser.Image" alt="Imagen de @friendUser.Username" class="rounded-circle img-fluid mb-3" style="width:100px;height:100px; margin-right: 15px"/>
+                            @friendUser.Username
+                        </span>
+                        <form asp-action="DeleteFriend" asp-controller="Friend" method="post" style="margin:0">
+                            <input type="hidden" name="friendId" value="@friendUser.IdUser" />
+                            <button type="submit" class="btn btn-danger fade-button">Eliminar</button>
+                        </form>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p class="text-muted">Aún no tienes amigos agregados.</p>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        // Mensaje de eliminación
+        @if (TempData["SweetAlertMessage"] != null)
+        {
+            <text>
+                Swal.fire({
+                    icon: 'success',
+                    text: '@Html.Raw(TempData["SweetAlertMessage"])',
+                    confirmButtonColor: '#F4C430',
+                });
+            </text>
+        }
+
+        // Manejo del mensaje de amistad (aceptada o rechazada)
+        @if (TempData["FriendshipMessage"] != null)
+        {
+            <text>
+                var friendshipMsg = '@Html.Raw(TempData["FriendshipMessage"])';
+                if (friendshipMsg.indexOf('rechazado') >= 0) {
+                    // Popup para solicitud rechazada (sin confetti)
+                    Swal.fire({
+                        title: 'Solicitud Rechazada',
+                        text: friendshipMsg,
+                        icon: 'info',
+                        confirmButtonColor: '#F4C430'
+                    });
+                } else {
+                    // Popup para solicitud aceptada con confetti
+                    Swal.fire({
+                        title: '🎉 ¡Amistad Confirmada!',
+                        text: friendshipMsg,
+                        icon: 'success',
+                        confirmButtonColor: '#F4C430'
+                    });
+                    confetti({
+                        particleCount: 200,
+                        spread: 70,
+                        origin: { y: 0.6 }
+                    });
+                }
+            </text>
+        }
+    </script>
+}
+
+
+

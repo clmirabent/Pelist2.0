@@ -1,6 +1,6 @@
 @using Films.Models.APIModels
+@using Microsoft.IdentityModel.Tokens
 @model Films.Models.ViewModels.UserProfileViewModel
-
 @{
     <link rel="stylesheet" href="~/css/profileDashboard.css" />
     var sweetAlertMessage = TempData["SweetAlertMessage"] as string;
@@ -34,7 +34,6 @@
                         4 => "fa-trash-can",
                         _ => "fa-list"
                     };
-
                     <div class="list-item">
                         <a asp-controller="Movies" asp-action="ViewList" asp-route-id="@type.IdListType">
                             <i class="fa-solid @iconClass"></i> @type.ListName
@@ -55,14 +54,53 @@
                 <p>No tienes listas disponibles.</p>
             }
         </div>
+        <!-- REQUEST SECTION -->
+        <div class="request-section col-12 mt-4">
+            <h3 style="color: #F4C430;" class="section-title">Solicitudes Pendientes</h3>
+
+            @if (!Model.FriendRequests.IsNullOrEmpty())
+            {
+                foreach (var friend in Model.FriendRequests)
+                {
+                    <div style="    background-color: rgba(255, 255, 255, 0.1);" class="card mb-3 p-3 shadow-sm">
+                        <div class="d-flex justify-content-between align-items-center w-100">
+                            <div class="d-flex align-items-center gap-3">
+                                <img src="@friend.FkIdFriendNavigation.Image"
+                                     alt="Imagen de @friend.FkIdFriendNavigation.Username"
+                                     class="rounded-circle"
+                                     style="width: 50px; height: 50px; object-fit: cover;" />
+
+                                <strong>@friend.FkIdFriendNavigation.Username</strong>
+                            </div>
+
+                            <form method="post" asp-controller="Friend" asp-action="HandleFriendRequest" class="d-flex gap-2">
+                                <input type="hidden" name="friendId" value="@friend.FkIdFriend" />
+                                <button type="submit" name="actionType" value="accept" class="btn btn-success btn-sm">
+                                    <i class="fa-solid fa-check"></i>
+                                </button>
+                                <button type="submit" name="actionType" value="reject" class="btn btn-danger btn-sm">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p class="text-center text-muted">No tienes solicitudes pendientes.</p>
+            }
+        </div>
+
+
     </aside>
 
-    <!-- RIGHT SECTION -->
+        <!-- RIGHT SECTION -->
     <main class="profile-main">
         <!-- FRIENDS -->
         <div class="friends-header">
-            <a asp-controller="Account" asp-action="Friends" class="friends-link text-decoration-none">
-                <h3  style="color: #F4C430"> @Model.User.FriendFkIdFriendNavigations.Count() Amigos</h3> 
+            <a asp-controller="Friend" asp-action="Friends" class="friends-link text-decoration-none">
+                <h3 style="color: #F4C430"> @Model.Friends.Count() Amigos</h3>
             </a>
         </div>
 
@@ -109,7 +147,7 @@
         Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: '@sweetAlertMessage'
+            text: ' @Html.Raw(@sweetAlertMessage)',
         });
     </script>
 }

@@ -120,4 +120,29 @@ a {
     background-color: #F4C430;
     color: #1e1e2f;
 }
+.nav-item {
+    width: 56px;
+    height: 56px;
+}
+.textarea-about {
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    padding: 0.75rem;
+    resize: none;
+    transition: border 0.3s ease;
+}
+
+.textarea-about:focus {
+    border-color: #F4C430;
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(13,110,253,.25);
+}
+
+.char-counter {
+    position: absolute;
+    bottom: 5px;
+    right: 15px;
+    font-size: 0.85rem;
+    transition: color 0.3s ease;
+}
 

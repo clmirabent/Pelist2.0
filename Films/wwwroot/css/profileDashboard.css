@@ -43,5 +43,21 @@ body {
     color: #F4C430;
 }
 
+.request-section .card {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    transition: all 0.3s ease-in-out;
+}
+
+.request-section .card:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.request-section img {
+    border: 2px solid #F4C430;
+}
+
+
 
 
