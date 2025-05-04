@@ -1,6 +1,8 @@
 ﻿using Films.Context;
 using Films.Models;
+using Films.Models.APIModels;
 using Films.Models.ViewModels;
+using Films.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,10 +12,12 @@ namespace Films.Controllers;
 public class FriendController : Controller
 {
     private readonly FilmsDbContext _context;
+    private readonly TmbdService.TmdbService _tmdbService;
 
-    public FriendController(FilmsDbContext context)
+    public FriendController(FilmsDbContext context,  TmbdService.TmdbService tmdbService)
     {
         _context = context;
+        _tmdbService = tmdbService;
     }
     
     public int? GetUserIdFromClaims()
@@ -273,7 +277,8 @@ public async Task<IActionResult> SearchUsers(string searchUser)
                 .ThenInclude(f => f.FkIdFriendNavigation)
                 .Include(u => u.FriendFkIdFriendNavigations)
                 .ThenInclude(f => f.FkIdUserNavigation)
-                .Include(u => u.Lists)  // Incluir las listas de películas del usuario
+                .Include(u => u.Lists)
+                .Include(u => u.Reviews)
                 .FirstOrDefaultAsync(u => u.IdUser == friendId);
             
         }
@@ -282,7 +287,28 @@ public async Task<IActionResult> SearchUsers(string searchUser)
         var typeLists = await _context.TypeLists.ToListAsync();
         
         //Obtener los comentarios
-        var reviews = await _context.Reviews.ToListAsync();
+        // Obtener las reseñas que sólo pertenezcan al amigo
+        var reviews = await _context.Reviews
+            .Where(r => r.FkIdUser == friendId)
+            .ToListAsync();
+        
+        // Construir el diccionario para almacenar el título de cada película asociado a los comentarios
+        var movieData = new Dictionary<int, string>();
+        foreach (var review in reviews)
+        {
+            try
+            {
+                // Se llama al servicio para obtener la película por su ID y se asigna el título
+                Movie movie = await _tmdbService.GetMovieById(review.FkIdMovie);
+                movieData[review.FkIdMovie] = movie.Title;
+            }
+            catch (Exception)
+            {
+                movieData[review.FkIdMovie] = "Título desconocido";
+            }
+        }
+        // Asignamos el diccionario al ViewBag con el nombre "MovieData"
+        ViewBag.MovieData = movieData;
         
 
         var friendViewModel = new UserProfileViewModel()

@@ -6,6 +6,11 @@
     var sweetAlertMessage = TempData["SweetAlertMessage"] as string;
 }
 
+@{
+    // Convertir el ViewBag.MovieData a un diccionario.
+    var movieData = ViewBag.MovieData as Dictionary<int, string> ?? new Dictionary<int, string>();
+}
+
 <div class="profile-wrapper container mt-5 d-flex flex-wrap justify-content-evenly">
     <!-- LEFT SECTION -->
     <aside class="profile-sidebar column justify-content-center mb-5 text-center">
@@ -134,33 +139,56 @@
         <!-- COMMENTS -->
         <div class="comments-section mt-5">
             <h3 style="color: #F4C430;">Mis Comentarios</h3>
-            @if (Model.User.Reviews != null && Model.User.Reviews.Any())
-            {
+                @if (Model.User.Reviews != null && Model.User.Reviews.Any())
+                {
                 foreach (var review in Model.User.Reviews)
                 {
+                    var movieTitle = movieData.GetValueOrDefault(review.FkIdMovie, "Título desconocido");
                     <div class="comment-item">
-                        <h4>@review.Title</h4>
-                        <div class="rating">
-                            @for (int i = 0; i < review.Rating; i++)
-                            {
-                                <span>&#9733;</span>
-                            }
+                        <div class="comment-header" style="display: flex; align-items: center;">
+                            <!-- Título de la pelicula con icono -->
+                            <div class="comment-text" style="margin-left: 10px;">
+                                <h4>
+                                    <i class="fa-solid fa-clapperboard"></i>&nbsp;@movieTitle
+                                </h4>
+                            </div>
                         </div>
-                        <p>@review.Description</p>
-                    </div>
-                }
-            }
-            else
-            {
-                if (ViewBag.IsFriend != null && ViewBag.IsFriend == true)
-                {
-                    <p>@Model.User.Username no tiene comentarios.</p>
+
+                            <!-- Nota -->
+                            <div class="stars">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    if (i <= review.Rating)
+                                    {
+                                        <i class="fa-solid fa-star text-warning"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="fa-regular fa-star text-secondary"></i>
+                                    }
+                                }
+                            </div>
+
+                            <!-- Descripción -->
+                            <p>@review.Description</p>
+
+                            <!-- Línea divisoria entre comentarios -->
+                            <hr class="comment-divider"/>
+                        </div>
+                    }
                 }
                 else
                 {
-                    <p>No has hecho ningún comentario.</p>
+                    if (ViewBag.IsFriend != null && ViewBag.IsFriend == true)
+                    {
+                        <p>@Model.User.Username no tiene comentarios.</p>
+                    }
+                    else
+                    {
+                        <p>No has hecho ningún comentario.</p>
+                    }
                 }
-            }
+            
         </div>
     </main>
 </div>

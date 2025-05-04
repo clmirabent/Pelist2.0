@@ -1,7 +1,9 @@
 using System.Security.Claims;
 using Films.Context;
 using Films.Models;
+using Films.Models.APIModels;
 using Films.Models.ViewModels;
+using Films.Services;
 using Microsoft.AspNetCore.Mvc;
 
 using Microsoft.EntityFrameworkCore;
@@ -14,10 +16,12 @@ namespace Films.Controllers;
 public class AccountController : Controller
 {
     private readonly FilmsDbContext _context;
+    private readonly TmbdService.TmdbService _tmdbService;
 
-    public AccountController(FilmsDbContext context)
+    public AccountController(FilmsDbContext context, TmbdService.TmdbService tmdbService)
     {
         _context = context;
+        _tmdbService = tmdbService;
     }
 
     public async Task<IActionResult> Profile()
@@ -26,7 +30,6 @@ public class AccountController : Controller
         
         if (id == null)
         {
-            // Si no hay id en los claims, se define el mensaje para el popup
             TempData["SweetAlertMessage"] = "Por favor, inicia sesión.";
             return RedirectToAction("Login", "Authentication");
         }
@@ -36,21 +39,45 @@ public class AccountController : Controller
             .Include(u => u.Lists)
             .ThenInclude(l => l.FkIdTypeListNavigation)
             .Include(u => u.FriendFkIdFriendNavigations)
+            .Include(u=>u.Reviews)
             .FirstOrDefaultAsync(u => u.IdUser == id);
-
+        
+        
         var typeLists = await _context.TypeLists.ToListAsync();
         if (user == null)
         {
             TempData["SweetAlertMessage"] = "Por favor, inicia sesión.";
             return RedirectToAction("Login");
         }
+
+        // Diccionario para almacenar el título de cada película
+        var movieData = new Dictionary<int, string>();
+
+        if (user.Reviews != null)
+        {
+            foreach (var review in user.Reviews)
+            {
+                try
+                {
+                    // Obtener los detalles de la película mediante el servicio TMDB
+                    Movie movie = await _tmdbService.GetMovieById(review.FkIdMovie);
+                    movieData[review.FkIdMovie] = movie.Title;
+                }
+                catch (Exception ex)
+                {
+                    movieData[review.FkIdMovie] = "Título desconocido";
+                }
+            }
+        }
+        
+        ViewBag.MovieData = movieData;
         
         var viewModel = new UserProfileViewModel
         {
             User = user,
             TypeLists = typeLists,
-            Friends = await GetFriends(user.IdUser),
-            FriendRequests = await GetFriendRequestReceived(user.IdUser)
+            Reviews = user.Reviews.ToList(),
+            Friends = user.FriendFkIdFriendNavigations?.ToList() ?? new List<Friend>(),
         };
 
         return View(viewModel);
@@ -66,23 +93,26 @@ public class AccountController : Controller
         return RedirectToAction("Index", "Home");
     }
     
-    public async Task<List<Friend>> GetFriendRequestReceived(int userId)
-    {
-        var friendRequestPending = await _context.Friends
-            .Where(f => f.FkIdUser == userId && f.PendingFriend == true)
-            .Include(friend => friend.FkIdFriendNavigation)
-            .ToListAsync();
-        return friendRequestPending;
-    }
 
-    public async Task<List<Friend>> GetFriends(int userId)
+    public async Task<IActionResult> Friends()
     {
-        return await _context.Friends
-            .Where(f => (f.FkIdFriend == userId || f.FkIdUser == userId) && f.PendingFriend == false)
-            .ToListAsync();
-    }
+        var id = GetUserIdFromClaims();
+        if (id == null)
+        {
+            TempData["SweetAlertMessage"] = "Por favor, inicia sesión para ver a tus amigos.";
+            return RedirectToAction("Login", "Authentication");
+        }
 
-    public int? GetUserIdFromClaims()
+        var user = await _context.Users
+            .Include(n => n.FriendFkIdUserNavigations).Include(user => user.FriendFkIdFriendNavigations)
+            .Where(n => n.IdUser == id).SingleOrDefaultAsync();
+       
+        var realFriends = user.FriendFkIdFriendNavigations.ToList();
+
+        return View(realFriends);
+        
+    }
+   private int? GetUserIdFromClaims()
     {
         if (int.TryParse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value, out var userId))
         {
