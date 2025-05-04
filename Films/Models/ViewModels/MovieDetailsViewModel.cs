@@ -14,10 +14,13 @@ namespace Films.Models.ViewModels
         public string BackdropPath { get; set; } // Agregado para la vista de detalle
         public List<Movie> RelatedMovies { get; set; } = new();
         public DateTime? ReleaseDate { get; set; }
-        public double Rating { get; set; }
-        public decimal Review { get; set; }
+        public int Review { get; set; } // En singular, la "nota" de la película. Pongo int porque los comentarios van con estrellas
+        public List<Review> Reviews { get; set; } = new(); // En plural: Lista de comentarios de los usuarios
+
         public List<Genre> Genres { get; set; } = new List<Genre>();
         public List<People> Persons { get; set; } = new List<People>();
+        public Dictionary<int, int> ReviewUserStates { get; set; } = new(); // Se necesita para asociar en qué estado tenía a esta película el autor justo cuando hizo la review
+
 
 
         // Estado del usuario (opcional)

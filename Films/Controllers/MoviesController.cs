@@ -51,48 +51,42 @@ namespace Films.Controllers
             var actors = await _tmdbService.GetPopularActorsByMovieId(movie.Id);
             movie.Persons = actors;
 
+            // Recuperar las reviews
+            var reviews = await _context.Reviews
+                .Include(r => r.FkIdUserNavigation) // Incluye el usuario que escribió la review
+                .Where(r => r.FkIdMovie == movie.Id)
+                .OrderByDescending(r => r.IdReview)
+                .ToListAsync();
+
+            var media = await _context.Reviews
+                .Where(r => r.FkIdMovie == movie.Id)
+                .AverageAsync(r => (int?)r.Rating) ?? 0;
+            var reviewUserIds = reviews.Select(r => r.FkIdUser).Distinct().ToList();
+
+            var userStates = await _context.Lists
+                .Where(l => l.FkIdMovie == movie.Id && reviewUserIds.Contains(l.FkIdUser))
+                .ToDictionaryAsync(l => l.FkIdUser, l => l.FkIdTypeList);
+
+
             var vm = new MovieDetailsViewModel
             {
                 Id = movie.Id,
                 Title = movie.Title,
                 Genres = movie.Genres,
-                Review = movie.Review,
+                Review = (int)media, // En singular, la "nota"  de la película
+                Reviews = reviews, // En plural, la lista de todos los comentarios de la peli
                 Overview = movie.Overview,
                 UserMovieLists = userLists,
                 PosterPath = movie.PosterPath,
                 BackdropPath = movie.BackdropPath,
                 ReleaseDate = DateTime.Parse(movie.ReleaseDate),
                 RelatedMovies = relatedMovies,
-                Persons = movie.Persons
+                Persons = movie.Persons,
+                ReviewUserStates = userStates
             };
 
             return View(vm);
         }
-
-        //BORRAR ESTO DESPUÉS DE PASAR EL FORMULARIO A LA VISTA DE DETALLE
-
-                                    [Route("movie/{id}/mr")]
-                                    public async Task<IActionResult> FormReview(int id)
-                                    {
-                                        var movie = await _tmdbService.GetMovieById(id);
-
-                                        if (movie == null)
-                                            return NotFound();
-
-                                        var vm = new MovieDetailsViewModel
-                                        {
-                                            Id = movie.Id,
-                                            Title = movie.Title,
-                                            Genres = movie.Genres,
-                                            Review = movie.Review,
-                                            Overview = movie.Overview,
-                                            PosterPath = movie.PosterPath,
-                                            BackdropPath = movie.BackdropPath,
-                                            ReleaseDate = DateTime.Parse(movie.ReleaseDate),
-                                        };
-
-                                        return View(vm);
-                                    }
 
         //BORRAR 
 
