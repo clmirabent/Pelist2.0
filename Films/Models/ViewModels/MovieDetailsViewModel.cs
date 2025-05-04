@@ -23,7 +23,7 @@ namespace Films.Models.ViewModels
 
 
 
-        // Estado del usuario (opcional)
+        // Estado del usuario
         public bool? IsFavorite { get; set; }
         public bool? IsWatched { get; set; }
         public bool? IsPending { get; set; }

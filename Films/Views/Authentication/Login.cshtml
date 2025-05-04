@@ -7,11 +7,11 @@
 
 <div class="auth-container">
     <div class="auth-left">
-        <img src="~/images/moviesImage.png" alt="Movie Photo" />
+        <img style="width: 900px"; height="900px" src="~/images/ImagenPortada2.png" alt="Movie Photo" />
     </div>
 
     <div class="auth-right">
-        <h2 >Login</h2>
+        <h1>Inicia Sesión</h1>
         <form asp-action="Login" method="post">
             @Html.AntiForgeryToken()
             <div class="form-group">
@@ -32,7 +32,6 @@
 
 <!-- Library SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<!-- Success Login Popup -->
 @if (ViewBag.SignUpSuccess != null)
 {
     <script>
@@ -45,7 +44,6 @@
         });
     </script>
 }
-<!-- Error popup when the user try to login without an account -->
 @if (ViewBag.LoginError != null)
 {
     <script>
@@ -59,6 +57,5 @@
     </script>
 }
 
-}
 
 
