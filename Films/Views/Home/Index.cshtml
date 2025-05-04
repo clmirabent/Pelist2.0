@@ -14,15 +14,18 @@
     <link rel="stylesheet" href="~/css/HomeIndex.css?v=@DateTime.Now.Ticks" />
 }
 
-<div class="home-container mt-4">
-    <!--Buscador y filtros-->
-    <div id="buscador-container" class="d-flex align-items-stretch gap-2">
-        <button class="btn bg-custom-button" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
-        <form method="post" asp-action="SetSearchMovies" class="d-flex flex-grow-1">
-            <input id="search" class="form-control me-2 bg-dark text-white border-custom" name="txtSearch" type="text" placeholder="Busqueda..." value="@(ViewBag.Search != null ? ViewBag.Search : "")" />
-            <button type="submit" class="btn bg-custom-button d-flex align-items-center gap-2">Buscar <i class="fa-solid fa-search"></i></button>
-        </form>
-    </div>
+
+<!--Buscador y filtros-->
+<div id="buscador-container" class="d-flex flex-column gap-2">
+    @*@<button class="btn bg-custom-button" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>*@
+    <img id="logo-home" src="images/logo_pelist.png"/>
+    <p id="pelist-slogan-text">Ver pelis es un arte, <span class="golden-text">criticarlas también</span>.</p>
+    <form method="post" id="search-form-home" asp-action="SetSearchMovies" class="d-flex flex-grow-1">
+        <input id="search" class="form-control me-2 bg-dark text-white border-custom" name="txtSearch" type="text" placeholder="Busqueda..." value="@(ViewBag.Search != null ? ViewBag.Search : "")" />
+        <button type="submit" id="search-button-home" class="btn bg-custom-button d-flex justify-content-center align-items-center gap-2">Buscar <i class="fa-solid fa-search"></i></button>
+    </form>
+</div>
+<div class="home-container">
     @if (Model == null)
     {
         <p>No hay películas disponibles.</p>

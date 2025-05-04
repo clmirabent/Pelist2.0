@@ -41,6 +41,12 @@ body {
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0,0,0,0.4);
 }
+.movie-container {
+    transition: transform 0.3s ease;
+}
+.movie-container:hover {
+    transform: scale(1.05); /* Aumenta un 5% */
+}
 
 .movieImg {
     position: relative;
@@ -107,8 +113,38 @@ body {
     scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
 }
 
-/*Modal de listas*/
+/*Buscador y parte de arriba*/
+#buscador-container {
+    background-image: linear-gradient(to bottom, rgba(30, 30, 47, 0), rgba(30, 30, 47, 1)), url(../images/banner_films.jpg);
+    background-size: cover; /* La imagen cubre todo el elemento */
+    background-position: center; /* Centrada */
+    background-repeat: no-repeat;
+    height: 75vh;
+}
 
+#search-form-home {
+    margin:100px;
+}
+
+#search-button-home {
+    width:130px;
+    align-content:center;
+}
+#logo-home {
+    width: 500px;
+    align-self: center;
+    filter: drop-shadow(5px 5px 5px #222);
+}
+#pelist-slogan-text {
+    align-self: center;
+    text-shadow: 2px 2px 2px gray;
+    font-size: 25px;
+    font-family: "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", sans-serif;
+}
+.golden-text {
+    color: #F4C430;
+}
+/*Modal de listas*/
 .bg-custom-button {
     background-color: #F4C430;
     color: black;
