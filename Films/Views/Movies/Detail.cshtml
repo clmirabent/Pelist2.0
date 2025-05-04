@@ -25,15 +25,15 @@
         type = currentList.FkIdTypeList; // 1. pendiente, 2. completada, 3. favorita, 4. abandonada
 
     string scoreClass = "low";
-    if (Model.Review >= 4)
+    if (Model.Rating >= 4)
     {
         scoreClass = "excellent";
     }
-    else if (Model.Review >= 3)
+    else if (Model.Rating >= 3)
     {
         scoreClass = "good";
     }
-    else if (Model.Review >= 2)
+    else if (Model.Rating >= 2)
     {
         scoreClass = "average";
     }
@@ -96,8 +96,8 @@
                     <div class="score @scoreClass">
                         <span class="score-value">
                             @(Model.Rating % 1 == 0
-                                ? ((int)Model.Rating).ToString()
-                                : Model.Rating.ToString("0.00", System.Globalization.CultureInfo.GetCultureInfo("es-ES")))
+                                        ? ((int)Model.Rating).ToString()
+                                        : Model.Rating.ToString("0.00", System.Globalization.CultureInfo.GetCultureInfo("es-ES")))
                         </span> / 5
                         <span class="score-label">Nota de los usuarios</span>
 
@@ -108,49 +108,56 @@
                             <span class="genre-badge">@genre.Name</span>
                         }
                     </div>
-                    <div class="movie-actions">
-                        <div class="action-wrapper">
-                            <form method="post" action="/Home/AddToList">
-                                <button type="submit" class="action-btn @(type == 1 ? "active" : "")" name="listType" value="Pendiente">
-                                    <i class="fa-regular fa-hourglass-half"></i>
-                                </button>
-                                <input type="hidden" name="idFilm" class="idFilm" value="@Model.Id" />
-                                <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
-                                <span class="tooltip">Pendiente</span>
-                            </form>
-                        </div>
-                        <div class="action-wrapper">
-                            <form method="post" action="/Home/AddToList">
-                                <button type="submit" class="action-btn @(type == 2 ? "active" : "")" name="listType" value="Completada">
-                                    <i class="fa-solid fa-check"></i>
-                                </button>
-                                <input type="hidden" name="idFilm" class="idFilm" value="@Model.Id" />
-                                <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
-                                <span class="tooltip">Completada</span>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <div class="movie-actions">
+                            <div class="action-wrapper">
+                                <form method="post" action="/Home/AddToList">
+                                    <button type="submit" class="action-btn @(type == 1 ? "active" : "")" name="listType" value="Pendiente">
+                                        <i class="fa-regular fa-hourglass-half"></i>
+                                    </button>
+                                    <input type="hidden" name="idFilm" class="idFilm" value="@Model.Id" />
+                                    <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                                    <span class="tooltip">Pendiente</span>
+                                </form>
+                            </div>
+                            <div class="action-wrapper">
+                                <form method="post" action="/Home/AddToList">
+                                    <button type="submit" class="action-btn @(type == 2 ? "active" : "")" name="listType" value="Completada">
+                                        <i class="fa-solid fa-check"></i>
+                                    </button>
+                                    <input type="hidden" name="idFilm" class="idFilm" value="@Model.Id" />
+                                    <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                                    <span class="tooltip">Completada</span>
 
-                            </form>
+                                </form>
+                            </div>
+                            <div class="action-wrapper">
+                                <form method="post" action="/Home/AddToList">
+                                    <button class="action-btn @(type == 3 ? "active" : "")" type="submit" name="listType" value="Favorita">
+                                        <i class="fa-solid fa-heart"></i>
+                                    </button>
+                                    <input type="hidden" name="idFilm" class="idFilm" value="@Model.Id" />
+                                    <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                                    <span class="tooltip">Favorita</span>
+                                </form>
+                            </div>
+                            <div class="action-wrapper">
+                                <form method="post" action="/Home/AddToList">
+                                    <button class="action-btn @(type == 4 ? "active" : "")" type="submit" name="listType" value="Abandonada">
+                                        <i class="fa-regular fa-trash-can"></i>
+                                    </button>
+                                    <span class="tooltip">Abandonada</span>
+                                    <input type="hidden" name="idFilm" class="idFilm" value="@Model.Id" />
+                                    <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                                </form>
+                            </div>
                         </div>
-                        <div class="action-wrapper">
-                            <form method="post" action="/Home/AddToList">
-                                <button class="action-btn @(type == 3 ? "active" : "")" type="submit" name="listType" value="Favorita">
-                                    <i class="fa-solid fa-heart"></i>
-                                </button>
-                                <input type="hidden" name="idFilm" class="idFilm" value="@Model.Id" />
-                                <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
-                                <span class="tooltip">Favorita</span>
-                            </form>
-                        </div>
-                        <div class="action-wrapper">
-                            <form method="post" action="/Home/AddToList">
-                                <button class="action-btn @(type == 4 ? "active" : "")" type="submit" name="listType" value="Abandonada">
-                                    <i class="fa-regular fa-trash-can"></i>
-                                </button>
-                                <span class="tooltip">Abandonada</span>
-                                <input type="hidden" name="idFilm" class="idFilm" value="@Model.Id" />
-                                <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
-                            </form>
-                        </div>
-                    </div>
+                    }
+                    else
+                    {
+                        <span class="mt-4"><a href="/Authentication/SignUp">Crea una cuenta</a> para aprovecharte de la gestión de listas de Pelist</span>
+                    }
 
 
 
