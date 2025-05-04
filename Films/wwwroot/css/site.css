@@ -22,7 +22,19 @@ footer {
 }
 
 .footer-image-size {
-    width: 200px;
+    width: 150px;
+}
+
+.footer-content {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    
+}
+
+.footer-content a {
+    text-decoration: none;
+    color: white;
 }
 
 
@@ -41,7 +53,7 @@ footer {
 }
 
 .inferior-shadow {
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra más suave */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra mï¿½s suave */
 }
 .notification-badge {
     position: absolute;
