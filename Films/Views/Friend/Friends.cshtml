@@ -39,10 +39,22 @@
                     @foreach (var user in Model.SearchResults)
                     {
                         <div class="list-group-item d-flex justify-content-between align-items-center">
-                        <span>
-                            <img src="@user.Image" alt="Imagen de @user.Username" class="rounded-circle img-fluid mb-3" style="width:100px;height:100px; margin-right: 15px" />
-                            @user.Username
-                        </span>
+                            <a href="javascript:void(0)"
+                               onclick="Swal.fire({
+                                   icon: 'info',
+                                   title: 'Acceso Denegado',
+                                   text: 'Tienes que ser amigo de @user.Username para ver su perfil.'
+                               });"
+                               style="display: flex; flex-direction: row; align-items: center;text-decoration: none;">
+                                <img src="@user.Image" alt="Imagen de @user.Username"
+                                     class="rounded-circle"
+                                     style="width:100px; height:100px; margin-right: 15px;" />
+                                <div>
+                                    <strong style="color: white;">@user.Username</strong><br />
+                                    <span style="color: white;">@user.AboutMe</span>
+                                </div>
+                                
+                            </a>
                             <div>
                                 @if (!string.IsNullOrEmpty(user.FriendshipStatus))
                                 {
@@ -85,8 +97,10 @@
                 {
                     <div class="list-group-item d-flex justify-content-between align-items-center">
                         <span>
+                             <a asp-controller="Friend" asp-action="GetFriendProfile" asp-route-friendId="@friendUser.IdUser" class="friends-link text-decoration-none">
                             <img src="@friendUser.Image" alt="Imagen de @friendUser.Username" class="rounded-circle img-fluid mb-3" style="width:100px;height:100px; margin-right: 15px"/>
                             @friendUser.Username
+                            </a>
                         </span>
                         <form asp-action="DeleteFriend" asp-controller="Friend" method="post" style="margin:0">
                             <input type="hidden" name="friendId" value="@friendUser.IdUser" />

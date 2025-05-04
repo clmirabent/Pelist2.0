@@ -55,42 +55,46 @@
             }
         </div>
         <!-- REQUEST SECTION -->
-        <div class="request-section col-12 mt-4">
-            <h3 style="color: #F4C430;" class="section-title">Solicitudes Pendientes</h3>
+        @if (ViewBag.IsFriend == null || ViewBag.IsFriend == false)
+        {
+            <!-- REQUEST SECTION -->
+            <div class="request-section col-12 mt-4">
+                <h3 style="color: #F4C430;" class="section-title">Solicitudes Pendientes</h3>
 
-            @if (!Model.FriendRequests.IsNullOrEmpty())
-            {
-                foreach (var friend in Model.FriendRequests)
+                @if (!Model.FriendRequests.IsNullOrEmpty())
                 {
-                    <div style="    background-color: rgba(255, 255, 255, 0.1);" class="card mb-3 p-3 shadow-sm">
-                        <div class="d-flex justify-content-between align-items-center w-100">
-                            <div class="d-flex align-items-center gap-3">
-                                <img src="@friend.FkIdFriendNavigation.Image"
-                                     alt="Imagen de @friend.FkIdFriendNavigation.Username"
-                                     class="rounded-circle"
-                                     style="width: 50px; height: 50px; object-fit: cover;" />
+                    foreach (var friend in Model.FriendRequests)
+                    {
+                        <div style="background-color: rgba(255, 255, 255, 0.1);" class="card mb-3 p-3 shadow-sm">
+                            <div class="d-flex justify-content-between align-items-center w-100">
+                                <div class="d-flex align-items-center gap-3">
+                                    <img src="@friend.FkIdFriendNavigation.Image"
+                                         alt="Imagen de @friend.FkIdFriendNavigation.Username"
+                                         class="rounded-circle"
+                                         style="width: 50px; height: 50px; object-fit: cover;" />
 
-                                <strong>@friend.FkIdFriendNavigation.Username</strong>
+                                    <strong>@friend.FkIdFriendNavigation.Username</strong>
+                                </div>
+
+                                <form method="post" asp-controller="Friend" asp-action="HandleFriendRequest" class="d-flex gap-2">
+                                    <input type="hidden" name="friendId" value="@friend.FkIdFriend" />
+                                    <button type="submit" name="actionType" value="accept" class="btn btn-success btn-sm">
+                                        <i class="fa-solid fa-check"></i>
+                                    </button>
+                                    <button type="submit" name="actionType" value="reject" class="btn btn-danger btn-sm">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                </form>
                             </div>
-
-                            <form method="post" asp-controller="Friend" asp-action="HandleFriendRequest" class="d-flex gap-2">
-                                <input type="hidden" name="friendId" value="@friend.FkIdFriend" />
-                                <button type="submit" name="actionType" value="accept" class="btn btn-success btn-sm">
-                                    <i class="fa-solid fa-check"></i>
-                                </button>
-                                <button type="submit" name="actionType" value="reject" class="btn btn-danger btn-sm">
-                                    <i class="fa-solid fa-xmark"></i>
-                                </button>
-                            </form>
                         </div>
-                    </div>
+                    }
                 }
-            }
-            else
-            {
-                <p class="text-center text-muted">No tienes solicitudes pendientes.</p>
-            }
-        </div>
+                else
+                {
+                    <p class="text-center text-muted">No tienes solicitudes pendientes.</p>
+                }
+            </div>
+        }
 
 
     </aside>
@@ -98,11 +102,28 @@
         <!-- RIGHT SECTION -->
     <main class="profile-main">
         <!-- FRIENDS -->
-        <div class="friends-header">
-            <a asp-controller="Friend" asp-action="Friends" class="friends-link text-decoration-none">
-                <h3 style="color: #F4C430"> @Model.Friends.Count() Amigos</h3>
-            </a>
-        </div>
+        @if (ViewBag.IsFriend != null && ViewBag.IsFriend == true)
+        {
+            <!-- Si se está viendo el perfil de un amigo, el link no dirige a otra página; al hacer clic se muestra un popup -->
+            <div class="friends-header">
+                <h3 style="color: #F4C430">
+                    <a href="javascript:void(0)"
+                       onclick="Swal.fire({ icon: 'info', title: 'Esta información es privada' });"
+                       class="friends-link text-decoration-none">
+                        @Model.Friends.Count() Amigos
+                    </a>
+                </h3>
+            </div>
+        }
+        else
+        {
+            <!-- Si es el perfil del usuario logueado, se muestra el listado de amigos normalmente -->
+            <div class="friends-header">
+                <a asp-controller="Friend" asp-action="Friends" class="friends-link text-decoration-none">
+                    <h3 style="color: #F4C430"> @Model.Friends.Count() Amigos</h3>
+                </a>
+            </div>
+        }
 
         <!-- ABOUT ME -->
         <div class="about-me mt-5">
@@ -112,7 +133,7 @@
 
         <!-- COMMENTS -->
         <div class="comments-section mt-5">
-            <h3 style=" color: #F4C430;">Mis Comentarios</h3>
+            <h3 style="color: #F4C430;">Mis Comentarios</h3>
             @if (Model.User.Reviews != null && Model.User.Reviews.Any())
             {
                 foreach (var review in Model.User.Reviews)
@@ -131,7 +152,14 @@
             }
             else
             {
-                <p>No has hecho ningún comentario.</p>
+                if (ViewBag.IsFriend != null && ViewBag.IsFriend == true)
+                {
+                    <p>@Model.User.Username no tiene comentarios.</p>
+                }
+                else
+                {
+                    <p>No has hecho ningún comentario.</p>
+                }
             }
         </div>
     </main>

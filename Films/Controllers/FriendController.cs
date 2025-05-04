@@ -1,14 +1,9 @@
-﻿using System.Diagnostics;
-using System.Net.NetworkInformation;
-using Films.Context;
+﻿using Films.Context;
 using Films.Models;
-using Films.Models.APIModels;
 using Films.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
-using static Films.Services.TmbdService;
-using System.Reflection.Metadata.Ecma335;
+
 
 namespace Films.Controllers;
 
@@ -252,6 +247,58 @@ public async Task<IActionResult> SearchUsers(string searchUser)
         return RedirectToAction("Friends");
     }
 
+    public async Task<IActionResult> GetFriendProfile(int friendId)
+    {
+        var loggedUserId = GetUserIdFromClaims();
+        if (loggedUserId == null)
+        {
+            TempData["SweetAlertMessage"] = "Por favor, inicia sesión para ver tus amigos";
+            return RedirectToAction("Login", "Authentication");
+        }
+
+        // Obtener la información básica del usuario
+        var friendProfile = await _context.Users
+            .FirstOrDefaultAsync(u => u.IdUser == friendId);
+
+        // Verificar si hay una relación de amistad
+        var isFriend = await _context.Friends
+            .AnyAsync(f => (f.FkIdUser == loggedUserId && f.FkIdFriend == friendId) ||
+                           (f.FkIdFriend == loggedUserId && f.FkIdUser == friendId));
+
+        // Si son amigos, incluir listas
+        if (isFriend)
+        {
+            friendProfile = await _context.Users
+                .Include(u => u.FriendFkIdUserNavigations)
+                .ThenInclude(f => f.FkIdFriendNavigation)
+                .Include(u => u.FriendFkIdFriendNavigations)
+                .ThenInclude(f => f.FkIdUserNavigation)
+                .Include(u => u.Lists)  // Incluir las listas de películas del usuario
+                .FirstOrDefaultAsync(u => u.IdUser == friendId);
+            
+        }
+        
+        // Obtener los tipos de listas 
+        var typeLists = await _context.TypeLists.ToListAsync();
+        
+        //Obtener los comentarios
+        var reviews = await _context.Reviews.ToListAsync();
+        
+
+        var friendViewModel = new UserProfileViewModel()
+        {
+            User = friendProfile,
+            TypeLists = typeLists,
+            Reviews = reviews,
+           
+        };
+
+    ViewBag.IsFriend = isFriend; // Enviar estado de amistad a la vista
+
+        return View("~/Views/Account/Profile.cshtml", friendViewModel);
+    }
+    }
+
     
-}
+
 
