@@ -171,7 +171,7 @@
                     </div>
                 }
             </div>
-            
+
         </div>
     </div>
 
@@ -182,8 +182,8 @@
             <div class="movie-scroll-container">
                 @foreach (var movie in Model.RelatedMovies)
                 {
-					var movieList = Model.UserMovieLists
-					.FirstOrDefault(l => l.FkIdMovie == movie.Id);
+                    var movieList = Model.UserMovieLists
+                    .FirstOrDefault(l => l.FkIdMovie == movie.Id);
                     string listSymbol = "";
                     if (movieList != null)
                     {
@@ -200,11 +200,11 @@
                         @if (User.Identity.IsAuthenticated)
                         {
                             <button id="@movie.Id"
-                                    class="movieBtn"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#movieModal"
-                                    data-id="@movie.Id"
-                                    data-list-type="@movieList?.FkIdTypeList">
+                            class="movieBtn"
+                            data-bs-toggle="modal"
+                            data-bs-target="#movieModal"
+                            data-id="@movie.Id"
+                            data-list-type="@movieList?.FkIdTypeList">
                                 @if (string.IsNullOrEmpty(listSymbol))
                                 {
                                     <i class="fa-solid fa-plus fa-sm"></i>
@@ -229,12 +229,37 @@
                     </div>
                 }
             </div>
-            
+
 
 
         </div>
     }
 
+    @if (User.Identity.IsAuthenticated)
+    {
+        <form method="post" asp-action="AddReview" class="container mt-3">
+            <h3>Opiniones</h3>
+            <div class="d-flex flex-column">
+                <label for="titleReview">Asunto</label>
+                <div class="d-flex align-items-center">
+                    <input type="text" name="titleReview" class="form-control-sm me-2 border-radius-min" placeholder="Asunto..." required />
+                    <div id="star-container">
+                        <span class="star" data-value="1">&#9733;</span>
+                        <span class="star" data-value="2">&#9733;</span>
+                        <span class="star" data-value="3">&#9733;</span>
+                        <span class="star" data-value="4">&#9733;</span>
+                        <span class="star" data-value="5">&#9733;</span>
+                    </div>
+                </div>
+            </div>
+            <label for="descriptionReview" class="form-label">Descripción</label>
+            <textarea name="descriptionReview" id="descriptionReview" class="form-control" rows="4" placeholder="Escribe tu reseña aquí..." required></textarea>
+
+            <input type="hidden" name="ratingInput" id="ratingInput" />
+            <input type="hidden" name="idFilm" class="idFilm" value="@Model.Id" />
+            <button type="submit" class="btn bg-custom-button w-100 mt-3" id="submit-button-send-review">Enviar</button>
+        </form>
+    }
     @if (Model.Reviews.Any())
     {
         <div class="container mt-5">
@@ -389,5 +414,6 @@
             }
         });
     </script>
-
+    <script src="~/js/detail.js?v=@DateTime.Now.Ticks"></script>
 }
+

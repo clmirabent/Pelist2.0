@@ -88,8 +88,6 @@ namespace Films.Controllers
             return View(vm);
         }
 
-        //BORRAR 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult AddReview(string titleReview, string descriptionReview, int ratingInput, int idFilm)
