@@ -177,10 +177,13 @@
             <div class="actor-pics">
                 @foreach (var actor in actors)
                 {
-                    <div class="actor-item">
-                        <img src="https://image.tmdb.org/t/p/w185/@actor.ProfilePath" alt="@actor.Name" />
-                        <span>@actor.Name</span>
-                    </div>
+                    if (actor.ProfilePath != null)
+                    {
+                        <div class="actor-item">
+                            <img src="https://image.tmdb.org/t/p/w185/@actor.ProfilePath" alt="@actor.Name" />
+                            <span>@actor.Name</span>
+                        </div>
+                    }
                 }
             </div>
 
