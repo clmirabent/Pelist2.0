@@ -25,15 +25,15 @@
         type = currentList.FkIdTypeList; // 1. pendiente, 2. completada, 3. favorita, 4. abandonada
 
     string scoreClass = "low";
-    if (Model.Review >= 9)
+    if (Model.Review >= 4)
     {
         scoreClass = "excellent";
     }
-    else if (Model.Review >= 7)
+    else if (Model.Review >= 3)
     {
         scoreClass = "good";
     }
-    else if (Model.Review >= 5)
+    else if (Model.Review >= 2)
     {
         scoreClass = "average";
     }
@@ -92,10 +92,15 @@
             <div class="banner-content container">
                 <img class="poster" src="https://image.tmdb.org/t/p/w500/@Model.PosterPath" alt="@Model.Title" />
                 <div class="info">
-                    <h1>@Model.Title  (@Model.Id)</h1>
+                    <h1>@Model.Title</h1>
                     <div class="score @scoreClass">
-                        <span class="score-value">@Model.Review</span>
+                        <span class="score-value">
+                            @(Model.Review % 1 == 0
+                                ? ((int)Model.Review).ToString()
+                                : Model.Review.ToString("0.00", System.Globalization.CultureInfo.GetCultureInfo("es-ES")))
+                        </span> / 5
                         <span class="score-label">Nota de los usuarios</span>
+
                     </div>
                     <div class="genres">
                         @foreach (var genre in Model.Genres)
@@ -237,29 +242,40 @@
 
     @if (User.Identity.IsAuthenticated)
     {
+        var userId = int.Parse(User.FindFirst("UserId").Value);
+        var userReview = Model.Reviews.FirstOrDefault(r => r.FkIdUser == userId);
+
         <form method="post" asp-action="AddReview" class="container mt-3">
             <h3>Opiniones</h3>
             <div class="d-flex flex-column">
                 <label for="titleReview">Asunto</label>
                 <div class="d-flex align-items-center">
-                    <input type="text" name="titleReview" class="form-control-sm me-2 border-radius-min" placeholder="Asunto..." required />
+                    <input type="text" name="titleReview" class="form-control-sm me-2 border-radius-min"
+                           placeholder="Asunto..." required
+                           value="@(userReview?.Title ?? "")" />
+
                     <div id="star-container">
-                        <span class="star" data-value="1">&#9733;</span>
-                        <span class="star" data-value="2">&#9733;</span>
-                        <span class="star" data-value="3">&#9733;</span>
-                        <span class="star" data-value="4">&#9733;</span>
-                        <span class="star" data-value="5">&#9733;</span>
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            <span class="star @(userReview != null && userReview.Rating >= i ? "selected" : "")" data-value="@i">&#9733;</span>
+                        }
                     </div>
                 </div>
             </div>
-            <label for="descriptionReview" class="form-label">Descripción</label>
-            <textarea name="descriptionReview" id="descriptionReview" class="form-control" rows="4" placeholder="Escribe tu reseña aquí..." required></textarea>
 
-            <input type="hidden" name="ratingInput" id="ratingInput" />
+            <label for="descriptionReview" class="form-label">Descripción</label>
+            <textarea name="descriptionReview" id="descriptionReview" class="form-control" rows="4"
+                      placeholder="Escribe tu reseña aquí..." required>@(userReview?.Description ?? "")</textarea>
+
+            <input type="hidden" name="ratingInput" id="ratingInput" value="@userReview?.Rating" />
             <input type="hidden" name="idFilm" class="idFilm" value="@Model.Id" />
-            <button type="submit" class="btn bg-custom-button w-100 mt-3" id="submit-button-send-review">Enviar</button>
+
+            <button type="submit" class="btn bg-custom-button w-100 mt-3" id="submit-button-send-review">
+                @(userReview == null ? "Enviar" : "Editar mi review")
+            </button>
         </form>
     }
+
     @if (Model.Reviews.Any())
     {
         <div class="container mt-5">
@@ -368,52 +384,8 @@
 @section Scripts {
     <script src="~/js/home.js?v=@DateTime.Now.Ticks"></script>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            document.querySelectorAll('.filter-btn').forEach(button => {
-                button.addEventListener('click', () => {
-                    const selectedRating = button.getAttribute('data-rating');
-                    const reviews = document.querySelectorAll('.review-item');
-                    let visibleCount = 0;
+    <script src="~/js/load_reviews.js?v=@DateTime.Now.Ticks"></script>
 
-                    reviews.forEach(review => {
-                        const rating = review.getAttribute('data-rating');
-
-                        if (selectedRating === 'all' || parseInt(rating) === parseInt(selectedRating)) {
-                            review.classList.remove('hidden');
-                            visibleCount++;
-                        } else {
-                            review.classList.add('hidden');
-                        }
-                    });
-
-                // Mostrar u ocultar mensaje si no hay coincidencias
-                const noReviewsMessage = document.getElementById('noReviewsMessage');
-                if (visibleCount === 0) {
-                    noReviewsMessage.style.display = 'block';
-                } else {
-                    noReviewsMessage.style.display = 'none';
-                }
-
-                            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                            button.classList.add('active');
-                        });
-                    });
-                });
-    </script>
-
-    <script>
-        document.getElementById("loadMoreBtn")?.addEventListener("click", function () {
-            const hiddenReviews = document.querySelectorAll('.hidden-review');
-            const toShow = Array.from(hiddenReviews).slice(0, 10);
-
-            toShow.forEach(r => r.classList.remove('hidden-review'));
-
-            if (document.querySelectorAll('.hidden-review').length === 0) {
-                this.style.display = 'none';
-            }
-        });
-    </script>
     <script src="~/js/detail.js?v=@DateTime.Now.Ticks"></script>
 }
 
