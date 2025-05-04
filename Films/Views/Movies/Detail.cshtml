@@ -95,9 +95,9 @@
                     <h1>@Model.Title</h1>
                     <div class="score @scoreClass">
                         <span class="score-value">
-                            @(Model.Review % 1 == 0
-                                ? ((int)Model.Review).ToString()
-                                : Model.Review.ToString("0.00", System.Globalization.CultureInfo.GetCultureInfo("es-ES")))
+                            @(Model.Rating % 1 == 0
+                                ? ((int)Model.Rating).ToString()
+                                : Model.Rating.ToString("0.00", System.Globalization.CultureInfo.GetCultureInfo("es-ES")))
                         </span> / 5
                         <span class="score-label">Nota de los usuarios</span>
 
