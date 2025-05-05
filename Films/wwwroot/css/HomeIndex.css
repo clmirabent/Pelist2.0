@@ -115,15 +115,18 @@ body {
 
 /*Buscador y parte de arriba*/
 #buscador-container {
-    background-image: linear-gradient(to bottom, rgba(30, 30, 47, 0), rgba(30, 30, 47, 1)), url(../images/banner_films.jpg);
+    background-image: linear-gradient(to bottom, rgba(30, 30, 47, 0), rgba(30, 30, 47, 1)), url(../images/movies-banner.webp);
     background-size: cover; /* La imagen cubre todo el elemento */
     background-position: center; /* Centrada */
     background-repeat: no-repeat;
-    height: 75vh;
+    height: 50vh;
 }
 
 #search-form-home {
-    margin:100px;
+    margin-left: 15%;
+    margin-right: 15%;
+    margin-top: 25px;
+    margin-bottom: 100px;
 }
 
 #search-button-home {
@@ -131,7 +134,8 @@ body {
     align-content:center;
 }
 #logo-home {
-    width: 500px;
+    margin-top: 20px;
+    width: 300px;
     align-self: center;
     filter: drop-shadow(5px 5px 5px #222);
 }
