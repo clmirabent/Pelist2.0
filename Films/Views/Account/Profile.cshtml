@@ -125,7 +125,17 @@
             <!-- Si es el perfil del usuario logueado, se muestra el listado de amigos normalmente -->
             <div class="friends-header">
                 <a asp-controller="Friend" asp-action="Friends" class="friends-link text-decoration-none">
-                    <h3 style="color: #F4C430"> @Model.Friends.Count() Amigos</h3>
+                    <h3 style="color: #F4C430">
+                        @if (Model.Friends != null)
+                        {
+                            <span>@Model.Friends.Count() Amigos</span>
+                        }
+                        else
+                        {
+                            <span>0 Amigos</span>
+                        }
+                    </h3>
+
                 </a>
             </div>
         }
@@ -207,6 +217,9 @@
         });
     </script>
 }
+
+
+
 
 
 

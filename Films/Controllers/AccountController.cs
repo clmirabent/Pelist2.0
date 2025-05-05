@@ -33,12 +33,12 @@ public class AccountController : Controller
             TempData["SweetAlertMessage"] = "Por favor, inicia sesión.";
             return RedirectToAction("Login", "Authentication");
         }
-
-        //search for the user in database and their properties
+        
         var user = await _context.Users
             .Include(u => u.Lists)
             .ThenInclude(l => l.FkIdTypeListNavigation)
             .Include(u => u.FriendFkIdFriendNavigations)
+            .ThenInclude(f => f.FkIdUserNavigation)
             .Include(u=>u.Reviews)
             .FirstOrDefaultAsync(u => u.IdUser == id);
         
