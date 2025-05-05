@@ -65,6 +65,11 @@ public partial class FilmsDbContext : DbContext
                 .HasForeignKey(d => d.FkIdUser)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_List_User");
+
+            entity.HasOne(l => l.Movie)
+                .WithMany()
+                .HasForeignKey(l => l.FkIdMovie)
+                .HasConstraintName("FK_List_Movie");
         });
 
         modelBuilder.Entity<MovieReview>(entity =>
