@@ -12,11 +12,15 @@ body {
 
 .auth-left {
     flex: 1;
-    background-color: #12121c;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    background-image: linear-gradient(to right, rgba(30, 30, 47, 0), rgba(30, 30, 47, 1)),url("../images/DesignScreen.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-blend-mode: lighten;
 }
 
 .auth-left img {
@@ -138,7 +142,6 @@ a {
 }
 
 .char-counter {
-    position: absolute;
     bottom: 5px;
     right: 15px;
     font-size: 0.85rem;
