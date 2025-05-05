@@ -6,7 +6,6 @@
 
 <div class="auth-container">
     <div class="auth-left">
-        <img src="~/images/moviePortada.png" alt="Movie Image" />
     </div>
 
     <div class="auth-right">
@@ -39,13 +38,14 @@
                           rows="4"
                           maxlength="120"
                           oninput="updateCharCount(this)"
-                          placeholder="Cuéntanos sobre ti"></textarea>
+                          placeholder="Cuéntanos sobre ti">
+                </textarea>
                 <div class="char-counter" id="charCount">0/120</div>
                 <span asp-validation-for="AboutMe" class="text-danger"></span>
             </div>
             <button type="submit" class="btn-submit">Registrarse</button>
         </form>
-        <p>¿Ya tienes una cuenta? <a asp-action="Login">Log in</a></p>
+        <p>¿Ya tienes una cuenta? <a asp-action="Login">Inicia Sesión</a></p>
     </div>
 </div>
 
@@ -54,7 +54,7 @@
 <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
 <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 
-<!-- Popup de éxito al registrarse (opcional) -->
+<!-- Popup de éxito al registrarse -->
 @if (TempData["SignUpSuccess"] != null)
 {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
