@@ -5,6 +5,7 @@ using static Films.Services.TmbdService;
 using Films.Models.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using Films.Models;
+using Films.Models.APIModels;
 
 namespace Films.Controllers
 {
@@ -158,5 +159,46 @@ namespace Films.Controllers
             return RedirectToAction("Detail", "Movies", new { id = idFilm });
         }
 
+        public async Task<IActionResult> ViewList(int id)
+        {
+            var userIdClaim = User.FindFirst("UserId");
+            int idUser = userIdClaim != null ? int.Parse(userIdClaim.Value) : 0;
+
+            // 1. Sacamos los IDs de las pelis en la lista del usuario
+            var movieIds = await _context.Lists
+                .Where(l => l.FkIdUser == idUser && l.FkIdTypeList == id)
+                .Select(l => l.FkIdMovie)
+                .ToListAsync();
+
+            // 2. Crear una lista vacía donde guardaremos los objetos Movie
+            var movies = new List<Movie>();
+
+            // 3. Llenar esa lista llamando al servicio TMDb por cada id
+            foreach (var movieId in movieIds)
+            {
+                var movie = await _tmdbService.GetMovieById(movieId);
+                if (movie != null)
+                {
+                    movies.Add(movie); // <- aquí se guarda
+                }
+            }
+
+            // 4. Obtener el nombre de la lista
+            var listType = await _context.TypeLists
+                .FirstOrDefaultAsync(t => t.IdListType == id);
+
+            var allLists = await _context.TypeLists.ToListAsync();
+            ViewBag.AllLists = allLists;
+
+
+            // 5. Crear el ViewModel final
+            var viewModel = new UserListViewModel
+            {
+                ListName = listType?.ListName ?? "Lista",
+                Movies = movies
+            };
+
+            return View(viewModel);
+        }
     }
 }

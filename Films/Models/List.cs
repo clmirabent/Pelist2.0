@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Films.Models.APIModels;
+using System;
 using System.Collections.Generic;
 
 namespace Films.Models;
@@ -16,4 +17,7 @@ public partial class List
     public virtual TypeList FkIdTypeListNavigation { get; set; } = null!;
 
     public virtual User FkIdUserNavigation { get; set; } = null!;
+
+    // Relaciones
+    public Movie Movie { get; set; }
 }

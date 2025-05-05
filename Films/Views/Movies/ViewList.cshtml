@@ -1,0 +1,98 @@
+﻿@using Films.Models.ViewModels
+@model Films.Models.ViewModels.UserListViewModel
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/ViewList.css?v=@DateTime.Now.Ticks" />
+}
+
+@{
+    var allLists = ViewBag.AllLists as List<Films.Models.TypeList>;
+}
+
+<div class="container mt-4">
+    <div class="d-flex gap-2 flex-wrap mb-4">
+        @foreach (var list in allLists)
+        {
+            var isActive = list.ListName == Model.ListName ? "active" : "";
+            <a asp-controller="Movies"
+               asp-action="ViewList"
+               asp-route-id="@list.IdListType"
+               class="btn btn-outline-light @isActive">
+                @list.ListName
+            </a>
+        }
+    </div>
+
+
+    @if (!Model.Movies.Any())
+    {
+        <p class="text-muted">Todavía no hay películas en esta lista.</p>
+    }
+    else
+    {
+        <div class="list-group">
+            @foreach (var movie in Model.Movies)
+            {
+                <div class="movie-card review-item d-flex gap-3 p-3 mb-4 rounded position-relative">
+
+                    <!-- Enlace clicable a toda la tarjeta -->
+                    <a href="/movie/@movie.Id/detail" class="stretched-link"></a>
+
+                    <div class="d-flex gap-3" style="z-index: 1;">
+                        <img src="https://image.tmdb.org/t/p/w92/@movie.PosterPath"
+                             alt="@movie.Title"
+                             class="rounded shadow"
+                             style="width: 92px; height: auto;" />
+
+                        <div class="flex-grow-1">
+                            <h5 class="mb-1">@movie.Title</h5>
+                            <small class="text-muted d-block">@movie.ReleaseDate.Substring(0, 4)</small>
+                            <p class="mb-0 text-white-50">
+                                @(movie.Overview?.Length > 120 ? movie.Overview.Substring(0, 120) + "..." : movie.Overview)
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Botones al pie -->
+                    <div class="position-absolute end-0 top-50 translate-middle-y d-flex gap-2 me-3" style="z-index: 2;">
+                        <!-- Botón eliminar -->
+                        <form method="post" action="/Home/AddToList">
+                            <input type="hidden" name="idFilm" value="@movie.Id" />
+                            <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                            <input type="hidden" name="listType" value="@Model.ListName" />
+                            <button type="submit" class="btn btn-outline-danger">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </form>
+
+                        <!-- Dropdown cambiar de lista -->
+                        <div class="dropdown">
+                            <button class="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                <i class="fa-solid fa-repeat"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-dark">
+                                @foreach (var list in allLists.Where(l => l.ListName != Model.ListName))
+                                {
+                                    <li>
+                                        <form method="post" action="/Home/AddToList" class="dropdown-item p-0">
+                                            <input type="hidden" name="idFilm" value="@movie.Id" />
+                                            <input type="hidden" name="listType" value="@list.ListName" />
+                                            <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                                            <button type="submit" class="dropdown-item">@list.ListName</button>
+                                        </form>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+
+            }
+
+        </div>
+    
+    }
+
+
+</div>
