@@ -10,7 +10,19 @@
 }
 
 <div class="container mt-4">
-    <h2>@Model.ListName</h2>
+    <div class="d-flex gap-2 flex-wrap mb-4">
+        @foreach (var list in allLists)
+        {
+            var isActive = list.ListName == Model.ListName ? "active" : "";
+            <a asp-controller="Movies"
+               asp-action="ViewList"
+               asp-route-id="@list.IdListType"
+               class="btn btn-outline-light @isActive">
+                @list.ListName
+            </a>
+        }
+    </div>
+
 
     @if (!Model.Movies.Any())
     {
@@ -21,7 +33,7 @@
         <div class="list-group">
             @foreach (var movie in Model.Movies)
             {
-                <div class="movie-card d-flex flex-column gap-2 p-3 mb-3 rounded bg-dark text-white position-relative">
+                <div class="movie-card review-item d-flex gap-3 p-3 mb-4 rounded position-relative">
 
                     <!-- Enlace clicable a toda la tarjeta -->
                     <a href="/movie/@movie.Id/detail" class="stretched-link"></a>
