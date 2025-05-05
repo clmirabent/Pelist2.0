@@ -40,7 +40,10 @@
                         _ => "fa-list"
                     };
                     <div class="list-item">
-                        <a class="text-decoration-none" asp-controller="Movies" asp-action="ViewList" asp-route-id="@type.IdListType">
+                        <a asp-controller="Movies" asp-action="ViewList"
+                           asp-route-id="@type.IdListType"
+                           asp-route-userId="@Model.User.IdUser"
+                           class="text-decoration-none">
                             <i class="fa-solid @iconClass"></i> @type.ListName
                         </a>
                         @if (listsOfType != null && listsOfType.Any())
@@ -122,12 +125,14 @@
         }
         else
         {
-            <!-- Si es el perfil del usuario logueado, se muestra el listado de amigos normalmente -->
+            <!-- Si es el perfil del usuario logueado, se muestra una vista previa de amigos -->
             <div class="friends-header">
                 <a asp-controller="Friend" asp-action="Friends" class="friends-link text-decoration-none">
-                    <h3 style="color: #F4C430"> @Model.Friends.Count() Amigos</h3>
+                    <h3 style="color: #F4C430">@Model.Friends.Count() Amigos</h3>
                 </a>
             </div>
+
+
         }
 
         <!-- ABOUT ME -->

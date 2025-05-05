@@ -141,6 +141,23 @@ body {
     margin-top: 10px;
 }
 
+.friend-card {
+    width: 100px;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    transition: transform 0.2s;
+}
 
+    .friend-card:hover {
+        transform: translateY(-3px);
+    }
 
-
+.friend-photo {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border: 2px solid #F4C430;
+    box-shadow: 0 0 6px rgba(244, 196, 48, 0.5);
+}

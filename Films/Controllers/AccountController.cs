@@ -37,14 +37,14 @@ public class AccountController : Controller
         //search for the user in database and their properties
         var user = await _context.Users
             .Include(u => u.Lists)
-            .ThenInclude(l => l.FkIdTypeListNavigation)
+                .ThenInclude(l => l.FkIdTypeListNavigation)
             .Include(u => u.FriendFkIdFriendNavigations)
             .Include(u => u.FriendFkIdUserNavigations)
-            .Include(u=>u.Reviews)
+            .Include(u => u.Reviews)
             .FirstOrDefaultAsync(u => u.IdUser == id);
-        
-        
+
         var typeLists = await _context.TypeLists.ToListAsync();
+
         if (user == null)
         {
             TempData["SweetAlertMessage"] = "Por favor, inicia sesión.";
@@ -75,8 +75,9 @@ public class AccountController : Controller
 
         var allFriends = user.FriendFkIdFriendNavigations
             .Concat(user.FriendFkIdUserNavigations)
-            .Where(f => f.PendingFriend == false) // Asegúrate de filtrar por los aceptados
+            .Where(f => f.PendingFriend == false)
             .ToList();
+
 
         var viewModel = new UserProfileViewModel
         {
