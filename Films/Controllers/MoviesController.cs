@@ -58,14 +58,14 @@ namespace Films.Controllers
                 .OrderByDescending(r => r.IdReview)
                 .ToListAsync();
 
-            var media = await _context.Reviews
-                .Where(r => r.FkIdMovie == movie.Id)
-                .AverageAsync(r => (int?)r.Rating) ?? 0;
             var reviewUserIds = reviews.Select(r => r.FkIdUser).Distinct().ToList();
 
             var userStates = await _context.Lists
                 .Where(l => l.FkIdMovie == movie.Id && reviewUserIds.Contains(l.FkIdUser))
                 .ToDictionaryAsync(l => l.FkIdUser, l => l.FkIdTypeList);
+
+            var movieReview = await _context.MovieReviews
+                .FirstOrDefaultAsync(mr => mr.FkIdMovie == movie.Id);
 
 
             var vm = new MovieDetailsViewModel
@@ -73,7 +73,7 @@ namespace Films.Controllers
                 Id = movie.Id,
                 Title = movie.Title,
                 Genres = movie.Genres,
-                Review = (int)media, // En singular, la "nota"  de la película
+                Rating = movieReview?.AverageRating ?? 0, // la "nota"  de la película
                 Reviews = reviews, // En plural, la lista de todos los comentarios de la peli
                 Overview = movie.Overview,
                 UserMovieLists = userLists,
@@ -97,47 +97,66 @@ namespace Films.Controllers
                 var userIdClaim = User.FindFirst("UserId");
                 int idUser = userIdClaim != null ? int.Parse(userIdClaim.Value) : 0;
 
-                var review = new Review
+                // ¿Ya existe una review de este usuario para esta peli?
+                var existingReview = _context.Reviews
+                    .FirstOrDefault(r => r.FkIdUser == idUser && r.FkIdMovie == idFilm);
+
+                if (existingReview == null)
                 {
-                    FkIdMovie = idFilm,
-                    Rating = ratingInput,
-                    Title = titleReview,
-                    Description = descriptionReview,
-                    FkIdUser = idUser
-                };
-
-                _context.Reviews.Add(review);
-                _context.SaveChanges();
-
-                //APARTADO PARA MOVIE REVIEW
-                var movieReviewEntry = _context.MovieReviews
-                .FirstOrDefault(mr => mr.FkIdMovie == idFilm);
-
-                if (movieReviewEntry == null)
-                {
-                    var movieReview = new MovieReview
+                    // Crear nueva review
+                    var newReview = new Review
                     {
                         FkIdMovie = idFilm,
-                        AverageRating = ratingInput
+                        Rating = ratingInput,
+                        Title = titleReview,
+                        Description = descriptionReview,
+                        FkIdUser = idUser
                     };
 
-                    _context.MovieReviews.Add(movieReview);
-                    _context.SaveChanges();
+                    _context.Reviews.Add(newReview);
                 }
                 else
                 {
-                    var ratings = _context.Reviews
-                        .Where(r => r.FkIdMovie == idFilm)
-                        .Select(r => r.Rating)
-                        .ToList();
+                    // Editar review existente
+                    existingReview.Title = titleReview;
+                    existingReview.Description = descriptionReview;
+                    existingReview.Rating = ratingInput;
 
-                    decimal average = (decimal)ratings.Sum() / ratings.Count;
-
-                    movieReviewEntry.AverageRating = average;
-                    _context.SaveChanges();
+                    _context.Reviews.Update(existingReview);
                 }
+
+                _context.SaveChanges();
+
+                // Recalcular la media
+                var ratings = _context.Reviews
+                    .Where(r => r.FkIdMovie == idFilm)
+                    .Select(r => r.Rating)
+                    .ToList();
+
+                decimal average = (decimal)ratings.Sum() / ratings.Count;
+
+                var movieReviewEntry = _context.MovieReviews
+                    .FirstOrDefault(mr => mr.FkIdMovie == idFilm);
+
+                if (movieReviewEntry == null)
+                {
+                    _context.MovieReviews.Add(new MovieReview
+                    {
+                        FkIdMovie = idFilm,
+                        AverageRating = average
+                    });
+                }
+                else
+                {
+                    movieReviewEntry.AverageRating = average;
+                    _context.MovieReviews.Update(movieReviewEntry);
+                }
+
+                _context.SaveChanges();
             }
+
             return RedirectToAction("Detail", "Movies", new { id = idFilm });
         }
+
     }
 }
