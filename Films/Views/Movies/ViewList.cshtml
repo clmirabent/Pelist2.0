@@ -7,7 +7,10 @@
 
 @{
     var allLists = ViewBag.AllLists as List<Films.Models.TypeList>;
+    int currentUserId = ViewBag.UserId ?? 0;
+    bool isMyProfile = ViewBag.IsMyProfile ?? true;
 }
+
 
 <div class="container mt-4">
     <div class="d-flex gap-2 flex-wrap mb-4">
@@ -17,9 +20,11 @@
             <a asp-controller="Movies"
                asp-action="ViewList"
                asp-route-id="@list.IdListType"
+               asp-route-userId="@currentUserId"
                class="btn btn-outline-light @isActive">
                 @list.ListName
             </a>
+
         }
     </div>
 
@@ -54,37 +59,41 @@
                     </div>
 
                     <!-- Botones al pie -->
-                    <div class="position-absolute end-0 top-50 translate-middle-y d-flex gap-2 me-3" style="z-index: 2;">
-                        <!-- Botón eliminar -->
-                        <form method="post" action="/Home/AddToList">
-                            <input type="hidden" name="idFilm" value="@movie.Id" />
-                            <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
-                            <input type="hidden" name="listType" value="@Model.ListName" />
-                            <button type="submit" class="btn btn-outline-danger">
-                                <i class="fa-solid fa-xmark"></i>
-                            </button>
-                        </form>
+                    @if (isMyProfile)
+                    {
+                        <div class="position-absolute end-0 top-50 translate-middle-y d-flex gap-2 me-3" style="z-index: 2;">
+                            <!-- Botón eliminar -->
+                            <form method="post" action="/Home/AddToList">
+                                <input type="hidden" name="idFilm" value="@movie.Id" />
+                                <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                                <input type="hidden" name="listType" value="@Model.ListName" />
+                                <button type="submit" class="btn btn-outline-danger">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </form>
 
-                        <!-- Dropdown cambiar de lista -->
-                        <div class="dropdown">
-                            <button class="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                <i class="fa-solid fa-repeat"></i>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-dark">
-                                @foreach (var list in allLists.Where(l => l.ListName != Model.ListName))
-                                {
-                                    <li>
-                                        <form method="post" action="/Home/AddToList" class="dropdown-item p-0">
-                                            <input type="hidden" name="idFilm" value="@movie.Id" />
-                                            <input type="hidden" name="listType" value="@list.ListName" />
-                                            <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
-                                            <button type="submit" class="dropdown-item">@list.ListName</button>
-                                        </form>
-                                    </li>
-                                }
-                            </ul>
+                            <!-- Dropdown cambiar de lista -->
+                            <div class="dropdown">
+                                <button class="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    <i class="fa-solid fa-repeat"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-dark">
+                                    @foreach (var list in allLists.Where(l => l.ListName != Model.ListName))
+                                    {
+                                        <li>
+                                            <form method="post" action="/Home/AddToList" class="dropdown-item p-0">
+                                                <input type="hidden" name="idFilm" value="@movie.Id" />
+                                                <input type="hidden" name="listType" value="@list.ListName" />
+                                                <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                                                <button type="submit" class="dropdown-item">@list.ListName</button>
+                                            </form>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
                         </div>
-                    </div>
+                    }
+
 
                 </div>
 
