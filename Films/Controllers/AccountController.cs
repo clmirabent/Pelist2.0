@@ -33,12 +33,13 @@ public class AccountController : Controller
             TempData["SweetAlertMessage"] = "Por favor, inicia sesión.";
             return RedirectToAction("Login", "Authentication");
         }
-        
+
+        //search for the user in database and their properties
         var user = await _context.Users
             .Include(u => u.Lists)
             .ThenInclude(l => l.FkIdTypeListNavigation)
             .Include(u => u.FriendFkIdFriendNavigations)
-            .ThenInclude(f => f.FkIdUserNavigation)
+            .Include(u => u.FriendFkIdUserNavigations)
             .Include(u=>u.Reviews)
             .FirstOrDefaultAsync(u => u.IdUser == id);
         
@@ -71,13 +72,18 @@ public class AccountController : Controller
         }
         
         ViewBag.MovieData = movieData;
-        
+
+        var allFriends = user.FriendFkIdFriendNavigations
+            .Concat(user.FriendFkIdUserNavigations)
+            .Where(f => f.PendingFriend == false) // Asegúrate de filtrar por los aceptados
+            .ToList();
+
         var viewModel = new UserProfileViewModel
         {
             User = user,
             TypeLists = typeLists,
             Reviews = user.Reviews.ToList(),
-            Friends = user.FriendFkIdFriendNavigations?.ToList() ?? new List<Friend>(),
+            Friends = allFriends,
         };
 
         return View(viewModel);
