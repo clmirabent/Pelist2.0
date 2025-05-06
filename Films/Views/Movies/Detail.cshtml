@@ -96,8 +96,8 @@
                     <div class="score @scoreClass">
                         <span class="score-value">
                             @(Model.Rating % 1 == 0
-                                        ? ((int)Model.Rating).ToString()
-                                        : Model.Rating.ToString("0.00", System.Globalization.CultureInfo.GetCultureInfo("es-ES")))
+                                                        ? ((int)Model.Rating).ToString()
+                                                        : Model.Rating.ToString("0.00", System.Globalization.CultureInfo.GetCultureInfo("es-ES")))
                         </span> / 5
                         <span class="score-label">Nota de los usuarios</span>
 
@@ -177,13 +177,16 @@
             <div class="actor-pics">
                 @foreach (var actor in actors)
                 {
-                    if (actor.ProfilePath != null)
-                    {
-                        <div class="actor-item">
-                            <img src="https://image.tmdb.org/t/p/w185/@actor.ProfilePath" alt="@actor.Name" />
-                            <span>@actor.Name</span>
-                        </div>
-                    }
+                    string profilePath;
+                    if (!string.IsNullOrEmpty(actor.ProfilePath))
+                        profilePath = $"https://image.tmdb.org/t/p/w185/{actor.ProfilePath}";
+                    else
+                        profilePath = "https://res.cloudinary.com/duc5qq3mn/image/upload/v1744890605/profile-icon-design-free-vector_m86jfn.jpg";
+
+                    <div class="actor-item">
+                        <img src="@profilePath" alt="@actor.Name" />
+                        <span>@actor.Name</span>
+                    </div>
                 }
             </div>
 
