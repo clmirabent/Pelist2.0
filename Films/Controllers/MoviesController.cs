@@ -184,10 +184,19 @@ namespace Films.Controllers
             var movies = new List<Movie>();
             foreach (var movieId in movieIds)
             {
-                var movie = await _tmdbService.GetMovieById(movieId);
-                if (movie != null)
-                    movies.Add(movie);
+                try
+                {
+                    var movie = await _tmdbService.GetMovieById(movieId);
+                    if (movie != null)
+                        movies.Add(movie);
+                }
+                catch (HttpRequestException ex)
+                {
+                    // Si la peli no existe (404) o hay error de red, se ignora
+                    continue;
+                }
             }
+
 
             var listType = await _context.TypeLists
                 .FirstOrDefaultAsync(t => t.IdListType == id);
