@@ -2,7 +2,7 @@
 @using Microsoft.IdentityModel.Tokens
 @model Films.Models.ViewModels.UserProfileViewModel
 @{
-    <link rel="stylesheet" href="~/css/profileDashboard.css" />
+    <link rel="stylesheet" href="~/css/profileDashboard.css?v=@DateTime.Now.Ticks" />
     var sweetAlertMessage = TempData["SweetAlertMessage"] as string;
 }
 
@@ -40,7 +40,10 @@
                         _ => "fa-list"
                     };
                     <div class="list-item">
-                        <a asp-controller="Movies" asp-action="ViewList" asp-route-id="@type.IdListType">
+                        <a asp-controller="Movies" asp-action="ViewList"
+                           asp-route-id="@type.IdListType"
+                           asp-route-userId="@Model.User.IdUser"
+                           class="text-decoration-none">
                             <i class="fa-solid @iconClass"></i> @type.ListName
                         </a>
                         @if (listsOfType != null && listsOfType.Any())
@@ -122,22 +125,14 @@
         }
         else
         {
-            <!-- Si es el perfil del usuario logueado, se muestra el listado de amigos normalmente -->
+            <!-- Si es el perfil del usuario logueado, se muestra una vista previa de amigos -->
             <div class="friends-header">
                 <a asp-controller="Friend" asp-action="Friends" class="friends-link text-decoration-none">
-                    <h3 style="color: #F4C430">
-                        @if (Model.Friends != null)
-                        {
-                            <span>@Model.Friends.Count() Amigos</span>
-                        }
-                        else
-                        {
-                            <span>0 Amigos</span>
-                        }
-                    </h3>
-
+                    <h3 style="color: #F4C430">@Model.Friends.Count() Amigos</h3>
                 </a>
             </div>
+
+
         }
 
         <!-- ABOUT ME -->
@@ -151,41 +146,37 @@
             <h3 style="color: #F4C430;">Mis Comentarios</h3>
                 @if (Model.User.Reviews != null && Model.User.Reviews.Any())
                 {
-                foreach (var review in Model.User.Reviews)
+                @foreach (var review in Model.User.Reviews)
                 {
                     var movieTitle = movieData.GetValueOrDefault(review.FkIdMovie, "Título desconocido");
                     <div class="comment-item">
-                        <div class="comment-header" style="display: flex; align-items: center;">
-                            <!-- Título de la pelicula con icono -->
-                            <div class="comment-text" style="margin-left: 10px;">
-                                <h4>
-                                    <i class="fa-solid fa-clapperboard"></i>&nbsp;@movieTitle
-                                </h4>
-                            </div>
+                        <div class="comment-header">
+                            <h4>
+                                <a href="/movie/@review.FkIdMovie/detail">
+                                    <i class="fa-solid fa-clapperboard"></i> @movieTitle
+                                </a>
+                            </h4>
                         </div>
 
-                            <!-- Nota -->
-                            <div class="stars">
-                                @for (int i = 1; i <= 5; i++)
+                        <div class="stars mb-2">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                if (i <= review.Rating)
                                 {
-                                    if (i <= review.Rating)
-                                    {
-                                        <i class="fa-solid fa-star text-warning"></i>
-                                    }
-                                    else
-                                    {
-                                        <i class="fa-regular fa-star text-secondary"></i>
-                                    }
+                                    <i class="fa-solid fa-star text-warning"></i>
                                 }
-                            </div>
-
-                            <!-- Descripción -->
-                            <p>@review.Description</p>
-
-                            <!-- Línea divisoria entre comentarios -->
-                            <hr class="comment-divider"/>
+                                else
+                                {
+                                    <i class="fa-regular fa-star text-secondary"></i>
+                                }
+                            }
                         </div>
-                    }
+
+                        <p class="mb-0">@review.Description</p>
+                        <hr class="comment-divider" />
+                    </div>
+                }
+
                 }
                 else
                 {
@@ -217,9 +208,6 @@
         });
     </script>
 }
-
-
-
 
 
 
