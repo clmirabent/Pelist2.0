@@ -162,25 +162,29 @@ namespace Films.Controllers
         public async Task<IActionResult> ViewList(int id, int? userId)
         {
             int idUser;
+            bool isMyProfile = true;
 
+            // Determinar de quién es el perfil
             if (userId.HasValue)
             {
-                // Si viene el ID por parámetro (perfil ajeno)
                 idUser = userId.Value;
+
+                var currentId = int.Parse(User.FindFirst("UserId")?.Value ?? "0");
+                isMyProfile = (idUser == currentId);
             }
             else
             {
-                // Si es tu perfil propio
                 var userIdClaim = User.FindFirst("UserId");
                 idUser = userIdClaim != null ? int.Parse(userIdClaim.Value) : 0;
             }
 
-            // Obtener las pelis de esa lista
+            // Obtener IDs de películas de la lista
             var movieIds = await _context.Lists
                 .Where(l => l.FkIdUser == idUser && l.FkIdTypeList == id)
                 .Select(l => l.FkIdMovie)
                 .ToListAsync();
 
+            // Obtener detalles desde el servicio TMDb
             var movies = new List<Movie>();
             foreach (var movieId in movieIds)
             {
@@ -190,18 +194,20 @@ namespace Films.Controllers
                     if (movie != null)
                         movies.Add(movie);
                 }
-                catch (HttpRequestException ex)
+                catch (HttpRequestException)
                 {
-                    // Si la peli no existe (404) o hay error de red, se ignora
+                    // Ignorar errores (ej. 404 si la peli ya no existe)
                     continue;
                 }
             }
 
+            // Obtener el tipo de lista
+            var listType = await _context.TypeLists.FirstOrDefaultAsync(t => t.IdListType == id);
 
-            var listType = await _context.TypeLists
-                .FirstOrDefaultAsync(t => t.IdListType == id);
-
+            // Pasar datos a la vista
             ViewBag.AllLists = await _context.TypeLists.ToListAsync();
+            ViewBag.IsMyProfile = isMyProfile;
+            ViewBag.UserId = idUser;
 
             var vm = new UserListViewModel
             {
@@ -211,6 +217,7 @@ namespace Films.Controllers
 
             return View(vm);
         }
+
 
     }
 }
