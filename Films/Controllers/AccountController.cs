@@ -78,6 +78,11 @@ public class AccountController : Controller
             .Where(f => f.PendingFriend == false)
             .ToList();
 
+        var friendRequests = await _context.Friends
+            .Where(f => f.FkIdUser == id && f.PendingFriend)
+            .Include(f => f.FkIdFriendNavigation)
+            .ToListAsync();
+
 
         var viewModel = new UserProfileViewModel
         {
@@ -85,6 +90,7 @@ public class AccountController : Controller
             TypeLists = typeLists,
             Reviews = user.Reviews.ToList(),
             Friends = allFriends,
+            FriendRequests = friendRequests 
         };
 
         return View(viewModel);

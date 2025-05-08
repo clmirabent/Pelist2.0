@@ -128,20 +128,6 @@ namespace Films.Controllers
         {
             if (ModelState.IsValid)
             {
-                //// Verify if email already exists
-              //  if (await _context.Users.AnyAsync(u => u.Email == model.Email))
-               // {
-              //      ModelState.AddModelError("Email", "Este email ya está registrado.");
-              //      return View(model);;
-              //  }
-                
-                // Verify if username already exists
-             //   if (await _context.Users.AnyAsync(u => u.Username == model.UserName))
-             //   {
-             //       ModelState.AddModelError(nameof(model.UserName), "Este nombre de usuario ya está en uso.");
-             //       return View(model);
-             //   }
-
                 PasswordHelper.CreatePasswordHash(model.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
                 // Upload image to Cloudinary

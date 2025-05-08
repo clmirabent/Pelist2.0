@@ -241,7 +241,6 @@ public async Task<IActionResult> SearchUsers(string searchUser)
         
         var friendName = await _context.Users.FirstOrDefaultAsync(u => u.IdUser == friendId);
 
-
         // Elimina la solicitud de amistad
         _context.Friends.Remove(friendRequest);
         await _context.SaveChangesAsync();
@@ -259,18 +258,24 @@ public async Task<IActionResult> SearchUsers(string searchUser)
             TempData["SweetAlertMessage"] = "Por favor, inicia sesión para ver tus amigos";
             return RedirectToAction("Login", "Authentication");
         }
+        
+        // Verificar si hay relación de amistad
+        var isTrueFriend = await _context.Friends
+            .AnyAsync(f => (f.FkIdUser == loggedUserId && f.FkIdFriend == friendId) ||
+                           (f.FkIdFriend == loggedUserId && f.FkIdUser == friendId));
+
+        if (!isTrueFriend)
+        {
+            TempData["SweetAlertMessage"] = "No puedes acceder a un perfil sin estar logueado."; 
+            return RedirectToAction("Login", "Authentication"); 
+        }
 
         // Obtener la información básica del usuario
         var friendProfile = await _context.Users
             .FirstOrDefaultAsync(u => u.IdUser == friendId);
 
-        // Verificar si hay una relación de amistad
-        var isFriend = await _context.Friends
-            .AnyAsync(f => (f.FkIdUser == loggedUserId && f.FkIdFriend == friendId) ||
-                           (f.FkIdFriend == loggedUserId && f.FkIdUser == friendId));
-
         // Si son amigos, incluir listas
-        if (isFriend)
+        if (isTrueFriend)
         {
             friendProfile = await _context.Users
                 .Include(u => u.FriendFkIdUserNavigations)
@@ -318,8 +323,8 @@ public async Task<IActionResult> SearchUsers(string searchUser)
             Reviews = reviews,
            
         };
-
-    ViewBag.IsFriend = isFriend; // Enviar estado de amistad a la vista
+        
+    ViewBag.IsFriend = isTrueFriend; // Enviar estado de amistad a la vista
 
         return View("~/Views/Account/Profile.cshtml", friendViewModel);
     }
